@@ -1,21 +1,27 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { PRINCIPLES } from "@/lib/mock-data";
 import { Target, GitBranch, Package } from "lucide-react";
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 const PRINCIPLE_ICONS = [Target, GitBranch, Package];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  }),
-};
-
 export default function Philosophy() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = shouldReduceMotion ? {
+    hidden: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 }
+  } : {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: DURATIONS.reveal, delay: i * 0.15, ease: EASE_REFINED },
+    }),
+  };
+
   return (
     <section
       className="section"
@@ -38,29 +44,44 @@ export default function Philosophy() {
           className="philosophy-grid"
         >
           {/* Left: headline */}
-          <div>
-            <span className="eyebrow" style={{ marginBottom: "0.875rem", display: "inline-flex" }}>
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+          >
+            <motion.span custom={0} variants={fadeUp} className="eyebrow" style={{ marginBottom: "0.875rem", display: "inline-flex" }}>
               Philosophy
-            </span>
-            <h2
+            </motion.span>
+            <motion.h2
+              custom={1}
+              variants={fadeUp}
               className="text-headline"
               style={{ color: "var(--text-primary)", marginBottom: "1.25rem" }}
             >
               Built around
               <br />
-              outcomes,
+              <motion.span 
+                initial={shouldReduceMotion ? { color: "var(--accent)" } : { color: "var(--text-primary)" }}
+                whileInView={{ color: "var(--accent)" }}
+                viewport={{ once: true, amount: 0.8 }}
+                transition={{ duration: 1, delay: 0.5, ease: EASE_REFINED }}
+              >
+                outcomes,
+              </motion.span>
               <br />
               not prompts.
-            </h2>
-            <p
+            </motion.h2>
+            <motion.p
+              custom={2}
+              variants={fadeUp}
               className="text-body"
               style={{ color: "var(--text-secondary)", maxWidth: 380 }}
             >
               Most AI tools are optimized for generating text. Aivora is
               optimized for producing results — structured, actionable, and
               grounded in your actual objective.
-            </p>
-          </div>
+            </motion.p>
+          </motion.div>
 
           {/* Right: principles */}
           <div
@@ -73,11 +94,12 @@ export default function Philosophy() {
             {PRINCIPLES.map((principle, i) => {
               const Icon = PRINCIPLE_ICONS[i];
               const isLast = i === PRINCIPLES.length - 1;
+              const delayOffset = 3 + i; // Offset for the right column
 
               return (
                 <motion.div
                   key={principle.id}
-                  custom={i}
+                  custom={delayOffset}
                   variants={fadeUp}
                   initial="hidden"
                   whileInView="visible"

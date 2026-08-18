@@ -1,7 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { useRef, useEffect, useState } from "react";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import { Quote, ArrowRight, CheckCircle2 } from "lucide-react";
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 const PIPELINE_STEPS = [
   "Understand",
@@ -11,18 +13,49 @@ const PIPELINE_STEPS = [
   "Recommend",
 ];
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.55, delay: i * 0.1, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  }),
-};
-
 export default function GoalOutcome() {
+  const shouldReduceMotion = useReducedMotion();
+  const ref = useRef<HTMLElement>(null);
+  const isInView = useInView(ref, { once: true, amount: 0.3 });
+  
+  // -1: idle, 0-4: steps, 5: outcome (emphasized), then loops
+  const [activeStep, setActiveStep] = useState(-1);
+  const [hasCompleted, setHasCompleted] = useState(false);
+
+  useEffect(() => {
+    if (!isInView || shouldReduceMotion) return;
+    
+    let currentStep = -1;
+    const interval = setInterval(() => {
+      currentStep++;
+      if (currentStep > PIPELINE_STEPS.length) {
+        // Outcome emphasized for 1.2 seconds, then loop
+        if (!hasCompleted) {
+          setHasCompleted(true);
+        }
+        currentStep = -1; // Reset for next cycle
+      }
+      setActiveStep(currentStep);
+    }, 450); // Slightly longer per step for better perception
+
+    return () => clearInterval(interval);
+  }, [isInView, shouldReduceMotion, hasCompleted]);
+
+  const fadeUp = shouldReduceMotion ? {
+    hidden: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 }
+  } : {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: DURATIONS.reveal, delay: i * 0.1, ease: EASE_REFINED },
+    }),
+  };
+
   return (
     <section
+      ref={ref}
       className="section"
       aria-label="From goal to outcome transformation"
       style={{
@@ -36,26 +69,33 @@ export default function GoalOutcome() {
         <div
           style={{ textAlign: "center", marginBottom: "clamp(2.5rem, 5vw, 4rem)" }}
         >
-          <span className="eyebrow" style={{ marginBottom: "0.875rem", display: "inline-flex" }}>
-            From goal to outcome
-          </span>
-          <h2
-            className="text-headline"
-            style={{ color: "var(--text-primary)", marginBottom: "1rem" }}
+          <motion.div
+            custom={0}
+            variants={fadeUp}
+            initial="hidden"
+            animate={isInView ? "visible" : "hidden"}
           >
-            Not a chatbot. An orchestrator.
-          </h2>
-          <p
-            className="text-body"
-            style={{
-              color: "var(--text-secondary)",
-              maxWidth: 480,
-              margin: "0 auto",
-            }}
-          >
-            Aivora doesn&apos;t just answer questions. It builds and executes a
-            structured workflow to turn your objective into an outcome.
-          </p>
+            <span className="eyebrow" style={{ marginBottom: "0.875rem", display: "inline-flex" }}>
+              From goal to outcome
+            </span>
+            <h2
+              className="text-headline"
+              style={{ color: "var(--text-primary)", marginBottom: "1rem" }}
+            >
+              Not a chatbot. An orchestrator.
+            </h2>
+            <p
+              className="text-body"
+              style={{
+                color: "var(--text-secondary)",
+                maxWidth: 480,
+                margin: "0 auto",
+              }}
+            >
+              Aivora doesn&apos;t just answer questions. It builds and executes a
+              structured workflow to turn your objective into an outcome.
+            </p>
+          </motion.div>
         </div>
 
         {/* Three-column transformation */}
@@ -70,13 +110,22 @@ export default function GoalOutcome() {
         >
           {/* Goal card */}
           <motion.div
-            custom={0}
+            custom={1}
             variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            animate={isInView ? "visible" : "hidden"}
             className="card"
-            style={{ padding: "1.75rem" }}
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
+            animate={{
+              border: (activeStep >= 0 && !shouldReduceMotion) ? "1px solid var(--accent-muted)" : "1px solid var(--border-default)",
+              boxShadow: (activeStep >= 0 && !shouldReduceMotion) ? "0 4px 12px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
+            }}
+            transition={{ duration: DURATIONS.normal }}
+            style={{ 
+              padding: "1.75rem",
+              border: "1px solid var(--border-default)",
+              position: "relative"
+            }}
           >
             <div
               style={{
@@ -124,34 +173,42 @@ export default function GoalOutcome() {
 
           {/* Arrow (desktop) */}
           <motion.div
-            custom={0.5}
+            custom={2}
             variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate={isInView ? "visible" : "hidden"}
             className="goal-arrow"
             style={{
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
+              position: "relative"
             }}
           >
-            <ArrowRight
-              size={22}
-              color="var(--accent)"
-              strokeWidth={1.5}
-              aria-hidden
-            />
+            <motion.div
+              animate={{
+                x: activeStep >= 0 && !shouldReduceMotion ? [0, 4, 0] : 0
+              }}
+              transition={{ duration: 1.2, repeat: activeStep >= 0 ? Infinity : 0, ease: "easeInOut" }}
+            >
+              <ArrowRight
+                size={22}
+                color={activeStep >= 0 ? "var(--accent)" : "var(--border-strong)"}
+                strokeWidth={1.5}
+                style={{ transition: "color 400ms" }}
+                aria-hidden
+              />
+            </motion.div>
           </motion.div>
 
           {/* Pipeline card */}
           <motion.div
-            custom={1}
+            custom={3}
             variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            animate={isInView ? "visible" : "hidden"}
             className="card"
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
             style={{
               padding: "1.75rem",
               border: "1px solid var(--accent-muted)",
@@ -168,7 +225,7 @@ export default function GoalOutcome() {
                 marginBottom: "1rem",
               }}
             >
-              Aivora
+              Aivora Engine
             </div>
             <div
               style={{
@@ -177,70 +234,94 @@ export default function GoalOutcome() {
                 gap: "0.5rem",
               }}
             >
-              {PIPELINE_STEPS.map((step, i) => (
-                <div key={step}>
-                  <div
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.625rem",
-                      padding: "0.5rem 0.75rem",
-                      background: "color-mix(in srgb, var(--accent) 8%, var(--bg-surface))",
-                      borderRadius: "var(--radius-sm)",
-                      border: "1px solid var(--accent-muted)",
-                    }}
-                  >
-                    <span
+              {PIPELINE_STEPS.map((step, i) => {
+                const isActive = activeStep === i;
+                const isPast = activeStep > i;
+                const isFuture = activeStep < i;
+                
+                return (
+                  <div key={step}>
+                    <motion.div
+                      whileHover={shouldReduceMotion ? {} : { y: -1 }}
+                      animate={{
+                        backgroundColor: isActive 
+                          ? "color-mix(in srgb, var(--accent) 15%, var(--bg-surface))" 
+                          : isPast
+                            ? "color-mix(in srgb, var(--accent) 5%, var(--bg-surface))"
+                            : "var(--bg-surface)",
+                        borderColor: isActive ? "var(--accent)" : "var(--accent-muted)",
+                        scale: isActive && !shouldReduceMotion ? 1.02 : 1,
+                        boxShadow: isActive && !shouldReduceMotion 
+                          ? "0 2px 8px 0 rgb(91 91 214 / 0.1)"
+                          : "none"
+                      }}
+                      transition={{ duration: DURATIONS.fast, ease: EASE_REFINED }}
                       style={{
-                        width: 20,
-                        height: 20,
-                        borderRadius: "50%",
-                        background: "var(--accent)",
                         display: "flex",
                         alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "0.625rem",
-                        fontWeight: 700,
-                        color: "#fff",
-                        flexShrink: 0,
-                      }}
-                      aria-hidden
-                    >
-                      {i + 1}
-                    </span>
-                    <span
-                      style={{
-                        fontSize: "0.8125rem",
-                        fontWeight: 600,
-                        color: "var(--accent)",
+                        gap: "0.625rem",
+                        padding: "0.5rem 0.75rem",
+                        borderRadius: "var(--radius-sm)",
+                        border: "1px solid var(--accent-muted)",
                       }}
                     >
-                      {step}
-                    </span>
+                      <motion.span
+                        animate={{
+                          backgroundColor: (isActive || isPast) ? "var(--accent)" : "var(--bg-muted)",
+                          color: (isActive || isPast) ? "#fff" : "var(--text-tertiary)"
+                        }}
+                        style={{
+                          width: 20,
+                          height: 20,
+                          borderRadius: "50%",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          fontSize: "0.625rem",
+                          fontWeight: 700,
+                          flexShrink: 0,
+                        }}
+                        aria-hidden
+                      >
+                        {i + 1}
+                      </motion.span>
+                      <motion.span
+                        animate={{
+                          color: isActive ? "var(--text-primary)" : isPast ? "var(--accent)" : "var(--text-tertiary)"
+                        }}
+                        style={{
+                          fontSize: "0.8125rem",
+                          fontWeight: 600,
+                        }}
+                      >
+                        {step}
+                      </motion.span>
+                    </motion.div>
+                    {i < PIPELINE_STEPS.length - 1 && (
+                      <motion.div
+                        animate={{
+                          backgroundColor: isPast ? "var(--accent)" : "var(--accent-muted)"
+                        }}
+                        style={{
+                          width: 1,
+                          height: 8,
+                          marginLeft: 29,
+                        }}
+                        aria-hidden
+                      />
+                    )}
                   </div>
-                  {i < PIPELINE_STEPS.length - 1 && (
-                    <div
-                      style={{
-                        width: 1,
-                        height: 8,
-                        background: "var(--accent-muted)",
-                        marginLeft: 29,
-                      }}
-                      aria-hidden
-                    />
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </motion.div>
 
           {/* Arrow (desktop) */}
           <motion.div
-            custom={1.5}
+            custom={4}
             variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
+            animate={isInView ? "visible" : "hidden"}
             className="goal-arrow"
             style={{
               display: "flex",
@@ -248,25 +329,44 @@ export default function GoalOutcome() {
               justifyContent: "center",
             }}
           >
-            <ArrowRight
-              size={22}
-              color="var(--success)"
-              strokeWidth={1.5}
-              aria-hidden
-            />
+            <motion.div
+              animate={{
+                x: activeStep >= PIPELINE_STEPS.length && !shouldReduceMotion ? [0, 4, 0] : 0
+              }}
+              transition={{ duration: 1.2, repeat: activeStep >= PIPELINE_STEPS.length ? Infinity : 0, ease: "easeInOut" }}
+            >
+              <ArrowRight
+                size={22}
+                color={activeStep >= PIPELINE_STEPS.length ? "var(--success)" : "var(--border-strong)"}
+                strokeWidth={1.5}
+                style={{ transition: "color 400ms" }}
+                aria-hidden
+              />
+            </motion.div>
           </motion.div>
 
           {/* Outcome card */}
           <motion.div
-            custom={2}
+            custom={5}
             variants={fadeUp}
             initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, amount: 0.2 }}
+            animate={isInView ? "visible" : "hidden"}
             className="card"
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
+            animate={{
+              borderColor: activeStep >= PIPELINE_STEPS.length 
+                ? "var(--success)" 
+                : "color-mix(in srgb, var(--success) 25%, var(--border-default))",
+              boxShadow: activeStep >= PIPELINE_STEPS.length 
+                ? "0 4px 20px 0 rgb(61 154 106 / 0.15)"
+                : "var(--shadow-sm)",
+              scale: activeStep >= PIPELINE_STEPS.length && !shouldReduceMotion ? 1.02 : 1,
+            }}
+            transition={{ duration: DURATIONS.normal }}
             style={{
               padding: "1.75rem",
               border: "1px solid color-mix(in srgb, var(--success) 25%, var(--border-default))",
+              position: "relative"
             }}
           >
             <div
@@ -289,12 +389,19 @@ export default function GoalOutcome() {
                 marginBottom: "0.75rem",
               }}
             >
-              <CheckCircle2
-                size={18}
-                color="var(--success)"
-                strokeWidth={2.5}
-                aria-hidden
-              />
+              <motion.div
+                animate={{
+                  scale: activeStep >= PIPELINE_STEPS.length ? [1, 1.2, 1] : 1
+                }}
+                transition={{ duration: 0.4 }}
+              >
+                <CheckCircle2
+                  size={18}
+                  color={activeStep >= PIPELINE_STEPS.length ? "var(--success)" : "var(--text-tertiary)"}
+                  strokeWidth={2.5}
+                  aria-hidden
+                />
+              </motion.div>
               <span
                 style={{
                   fontSize: "0.9375rem",

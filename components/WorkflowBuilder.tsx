@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ArrowDown, CheckCircle2, Target, Bot, Cpu, Brain, FileOutput } from "lucide-react";
 import {
   getBuilderWorkflow,
@@ -9,6 +9,7 @@ import {
   type InputSource,
   type OutputFormat,
 } from "@/lib/mock-data";
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 const GOALS: GoalType[] = ["Research", "Analysis", "Marketing", "Operations"];
 const INPUTS: InputSource[] = ["Documents", "Web", "APIs", "Data"];
@@ -49,10 +50,13 @@ function Selector({ label, options, selected, onChange }: SelectorProps) {
         style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}
       >
         {options.map((opt) => (
-          <button
+          <motion.button
             key={opt}
             onClick={() => onChange(opt)}
             aria-pressed={selected === opt}
+            whileHover={{ y: -1 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ duration: DURATIONS.micro, ease: EASE_REFINED }}
             style={{
               padding: "0.4375rem 0.875rem",
               borderRadius: "var(--radius-full)",
@@ -66,11 +70,12 @@ function Selector({ label, options, selected, onChange }: SelectorProps) {
                 selected === opt ? "var(--accent-subtle)" : "var(--bg-surface)",
               color: selected === opt ? "var(--accent)" : "var(--text-secondary)",
               cursor: "pointer",
-              transition: "background 150ms, border-color 150ms, color 150ms",
+              transition: "background 150ms, border-color 150ms, color 150ms, box-shadow 150ms",
+              boxShadow: selected === opt ? "0 2px 8px 0 rgb(91 91 214 / 0.1)" : "none",
             }}
           >
             {opt}
-          </button>
+          </motion.button>
         ))}
       </div>
     </div>
@@ -78,6 +83,7 @@ function Selector({ label, options, selected, onChange }: SelectorProps) {
 }
 
 export default function WorkflowBuilder() {
+  const shouldReduceMotion = useReducedMotion();
   const [goal, setGoal] = useState<GoalType>("Research");
   const [input, setInput] = useState<InputSource>("Web");
   const [output, setOutput] = useState<OutputFormat>("Report");
@@ -85,7 +91,11 @@ export default function WorkflowBuilder() {
   const workflow = getBuilderWorkflow({ goal, input, output });
 
   return (
-    <section
+    <motion.section
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: DURATIONS.reveal, ease: EASE_REFINED }}
       className="section"
       aria-label="Interactive workflow builder"
     >
@@ -186,6 +196,7 @@ export default function WorkflowBuilder() {
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
+              overflow: "hidden", // prevent layout shift weirdness
             }}
           >
             <div
@@ -202,34 +213,48 @@ export default function WorkflowBuilder() {
               Generated workflow
             </div>
 
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`${goal}-${input}-${output}`}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  width: "100%",
-                  maxWidth: 280,
-                }}
-              >
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                width: "100%",
+                maxWidth: 280,
+                position: "relative"
+              }}
+            >
+              <AnimatePresence mode="popLayout">
                 {workflow.nodes.map((node, i) => {
                   const Icon = NODE_ICONS[node.type] ?? Cpu;
                   const isStart = node.type === "start";
                   const isEnd = node.type === "end";
                   const isDecision = node.type === "decision";
                   const isLast = i === workflow.nodes.length - 1;
+                  
+                  // Use label + type as a stable key so React/Framer knows when nodes actually change
+                  const nodeKey = `${node.type}-${node.label}`;
 
                   return (
-                    <div key={i} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <motion.div
+                      layout={!shouldReduceMotion}
+                      key={nodeKey}
+                      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9, y: -10 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 10 }}
+                      transition={{ duration: DURATIONS.normal, ease: EASE_REFINED }}
+                      whileHover={shouldReduceMotion ? {} : { y: -2 }}
+                      style={{ 
+                        width: "100%", 
+                        display: "flex", 
+                        flexDirection: "column", 
+                        alignItems: "center",
+                        zIndex: workflow.nodes.length - i
+                      }}
+                    >
                       <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ delay: i * 0.06, duration: 0.35 }}
+                        layout={!shouldReduceMotion}
+                        whileHover={shouldReduceMotion ? {} : { y: -2 }}
+                        transition={{ duration: DURATIONS.micro, ease: EASE_REFINED }}
                         style={{
                           display: "flex",
                           alignItems: "center",
@@ -251,7 +276,8 @@ export default function WorkflowBuilder() {
                                 ? "1px solid var(--accent-muted)"
                                 : "1px solid var(--border-default)",
                           borderRadius: "var(--radius-md)",
-                          boxShadow: "var(--shadow-sm)",
+                          boxShadow: isDecision ? "0 2px 8px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
+                          transition: "box-shadow 300ms",
                         }}
                       >
                         <span
@@ -305,19 +331,38 @@ export default function WorkflowBuilder() {
                         </div>
                       </motion.div>
                       {!isLast && (
-                        <ArrowDown
-                          size={14}
-                          color="var(--text-tertiary)"
-                          strokeWidth={1.5}
-                          style={{ margin: "0.25rem 0" }}
-                          aria-hidden
-                        />
+                        <motion.div
+                          layout={!shouldReduceMotion}
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 20, opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          transition={{ duration: DURATIONS.fast, ease: "easeOut" }}
+                          style={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            width: "100%",
+                            overflow: "hidden"
+                          }}
+                        >
+                          <motion.div
+                            animate={{ y: [0, 4, 0] }}
+                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                          >
+                            <ArrowDown
+                              size={14}
+                              color={isDecision ? "var(--accent)" : "var(--border-strong)"}
+                              strokeWidth={1.5}
+                              aria-hidden
+                            />
+                          </motion.div>
+                        </motion.div>
                       )}
-                    </div>
+                    </motion.div>
                   );
                 })}
-              </motion.div>
-            </AnimatePresence>
+              </AnimatePresence>
+            </div>
           </div>
         </div>
       </div>
@@ -329,6 +374,6 @@ export default function WorkflowBuilder() {
           }
         }
       `}</style>
-    </section>
+    </motion.section>
   );
 }

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useCallback, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
   Brain,
   Search,
@@ -21,6 +21,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { DEMO_GOALS, type DemoGoal, type WorkflowStep } from "@/lib/mock-data";
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 // Icon map for step icons
 const ICON_MAP: Record<string, React.ElementType> = {
@@ -44,17 +45,24 @@ type DemoState = "idle" | "running" | "complete";
 function StepItem({
   step,
   status,
+  shouldReduceMotion
 }: {
   step: WorkflowStep;
   status: "pending" | "active" | "done";
+  shouldReduceMotion: boolean | null;
 }) {
   const Icon = ICON_MAP[step.icon] ?? Brain;
 
   return (
     <motion.div
-      layout
-      initial={{ opacity: 0, x: -12 }}
+      layout={!shouldReduceMotion}
+      initial={shouldReduceMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -12 }}
       animate={{ opacity: 1, x: 0 }}
+      transition={{ duration: DURATIONS.normal, ease: EASE_REFINED }}
+      whileHover={shouldReduceMotion ? {} : {
+        y: -1,
+        transition: { duration: DURATIONS.micro, ease: EASE_REFINED }
+      }}
       style={{
         display: "flex",
         alignItems: "center",
@@ -73,7 +81,13 @@ function StepItem({
             : status === "done"
               ? "1px solid color-mix(in srgb, var(--success) 20%, var(--border-default))"
               : "1px solid var(--border-subtle)",
-        transition: "background 300ms, border-color 300ms",
+        boxShadow:
+          status === "active"
+            ? "0 2px 8px 0 rgb(91 91 214 / 0.1)"
+            : "none",
+        transform: status === "active" && !shouldReduceMotion ? "scale(1.01)" : "scale(1)",
+        transformOrigin: "left center",
+        transition: "background 300ms, border-color 300ms, box-shadow 300ms, transform 300ms",
       }}
     >
       {/* Icon */}
@@ -96,13 +110,28 @@ function StepItem({
         }}
       >
         {status === "done" ? (
-          <CheckCircle2 size={13} color="var(--success)" strokeWidth={2.5} />
+          <motion.div
+            initial={shouldReduceMotion ? { scale: 1 } : { scale: 0.5 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+          >
+            <CheckCircle2 size={13} color="var(--success)" strokeWidth={2.5} />
+          </motion.div>
         ) : (
-          <Icon
-            size={13}
-            color={status === "active" ? "#fff" : "var(--text-tertiary)"}
-            strokeWidth={2}
-          />
+          <motion.div
+            animate={status === "active" && !shouldReduceMotion ? { rotate: 360 } : { rotate: 0 }}
+            transition={
+              status === "active"
+                ? { duration: 2, repeat: Infinity, ease: "linear" }
+                : { duration: 0.3 }
+            }
+          >
+            <Icon
+              size={13}
+              color={status === "active" ? "#fff" : "var(--text-tertiary)"}
+              strokeWidth={status === "active" ? 2.5 : 2}
+            />
+          </motion.div>
         )}
       </span>
 
@@ -116,8 +145,8 @@ function StepItem({
               status === "active"
                 ? "var(--accent)"
                 : status === "done"
-                  ? "var(--text-primary)"
-                  : "var(--text-tertiary)",
+                  ? "var(--success)"
+                  : "var(--text-primary)",
             transition: "color 300ms",
           }}
         >
@@ -126,7 +155,12 @@ function StepItem({
         <div
           style={{
             fontSize: "0.6875rem",
-            color: "var(--text-tertiary)",
+            color:
+              status === "active"
+                ? "var(--text-secondary)"
+                : "var(--text-tertiary)",
+            marginTop: 2,
+            transition: "color 300ms",
           }}
         >
           {step.description}
@@ -134,10 +168,10 @@ function StepItem({
       </div>
 
       {/* Status indicator */}
-      {status === "active" && (
+      {status === "active" && !shouldReduceMotion && (
         <motion.span
           animate={{ opacity: [0.3, 1, 0.3] }}
-          transition={{ duration: 1.2, repeat: Infinity }}
+          transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }}
           style={{
             width: 6,
             height: 6,
@@ -153,6 +187,7 @@ function StepItem({
 }
 
 export default function AgentDemo() {
+  const shouldReduceMotion = useReducedMotion();
   const [selectedGoal, setSelectedGoal] = useState<DemoGoal | null>(null);
   const [demoState, setDemoState] = useState<DemoState>("idle");
   const [activeStep, setActiveStep] = useState<number>(-1);
@@ -178,7 +213,8 @@ export default function AgentDemo() {
       }, elapsed);
       timeoutsRef.current.push(startT);
 
-      elapsed += step.duration;
+      // Increase step duration slightly for better pacing and comprehension
+      elapsed += step.duration + (shouldReduceMotion ? 0 : 200);
 
       // Mark step as done
       const endT = setTimeout(() => {
@@ -192,14 +228,13 @@ export default function AgentDemo() {
       }, elapsed);
       timeoutsRef.current.push(endT);
     });
-  }, []);
+  }, [shouldReduceMotion]);
 
   const handleGoalSelect = (goal: DemoGoal) => {
     if (demoState === "running") return;
     setSelectedGoal(goal);
-    setDemoState("idle");
-    setActiveStep(-1);
-    setCompletedSteps(new Set());
+    // Auto-run when a goal is selected to reduce friction
+    runDemo(goal);
   };
 
   const handleRun = () => {
@@ -211,6 +246,7 @@ export default function AgentDemo() {
   const handleReset = () => {
     clearTimeouts();
     setDemoState("idle");
+    setSelectedGoal(null);
     setActiveStep(-1);
     setCompletedSteps(new Set());
   };
@@ -218,7 +254,11 @@ export default function AgentDemo() {
   useEffect(() => () => clearTimeouts(), []);
 
   return (
-    <section
+    <motion.section
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.1 }}
+      transition={{ duration: DURATIONS.reveal, ease: EASE_REFINED }}
       id="how-it-works"
       className="section"
       aria-label="Interactive AI workflow demonstration"
@@ -269,12 +309,15 @@ export default function AgentDemo() {
           }}
         >
           {DEMO_GOALS.map((goal) => (
-            <button
+            <motion.button
               key={goal.id}
               role="radio"
               aria-checked={selectedGoal?.id === goal.id}
               onClick={() => handleGoalSelect(goal)}
               disabled={demoState === "running"}
+              whileHover={demoState === "running" ? {} : { y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ duration: DURATIONS.micro, ease: EASE_REFINED }}
               style={{
                 padding: "0.5rem 1rem",
                 borderRadius: "var(--radius-full)",
@@ -298,7 +341,7 @@ export default function AgentDemo() {
               }}
             >
               {goal.label}
-            </button>
+            </motion.button>
           ))}
         </div>
 
@@ -392,55 +435,69 @@ export default function AgentDemo() {
             </div>
 
             {/* Steps */}
-            {selectedGoal ? (
-              <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
-                {selectedGoal.steps.map((step, i) => {
-                  const status =
-                    completedSteps.has(i)
-                      ? "done"
-                      : activeStep === i
-                        ? "active"
-                        : "pending";
-                  return (
-                    <div key={step.id}>
-                      <StepItem step={step} status={status} />
-                      {i < selectedGoal.steps.length - 1 && (
-                        <div
-                          style={{
-                            width: 1,
-                            height: 12,
-                            background:
-                              completedSteps.has(i)
-                                ? "color-mix(in srgb, var(--success) 30%, var(--border-default))"
-                                : "var(--border-subtle)",
-                            marginLeft: 22,
-                            transition: "background 300ms",
-                          }}
-                          aria-hidden
-                        />
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-            ) : (
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  padding: "3rem 1rem",
-                  color: "var(--text-tertiary)",
-                  fontSize: "0.875rem",
-                  textAlign: "center",
-                  gap: "0.75rem",
-                }}
-              >
-                <Brain size={32} strokeWidth={1.5} color="var(--text-tertiary)" />
-                <p>Choose a goal to see a workflow in action.</p>
-              </div>
-            )}
+            <AnimatePresence mode="popLayout">
+              {selectedGoal ? (
+                <motion.div 
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}
+                >
+                  {selectedGoal.steps.map((step, i) => {
+                    const status =
+                      completedSteps.has(i)
+                        ? "done"
+                        : activeStep === i
+                          ? "active"
+                          : "pending";
+                    return (
+                      <div key={step.id}>
+                        <StepItem step={step} status={status} shouldReduceMotion={shouldReduceMotion} />
+                        {i < selectedGoal.steps.length - 1 && (
+                          <motion.div
+                            animate={{
+                              background: completedSteps.has(i)
+                                ? "color-mix(in srgb, var(--success) 40%, var(--accent-muted))"
+                                : activeStep === i
+                                  ? "linear-gradient(to bottom, var(--accent), transparent)"
+                                  : "var(--border-subtle)",
+                            }}
+                            transition={{ duration: DURATIONS.normal }}
+                            style={{
+                              width: 2,
+                              height: 12,
+                              marginLeft: 21,
+                              borderRadius: 1,
+                            }}
+                            aria-hidden
+                          />
+                        )}
+                      </div>
+                    );
+                  })}
+                </motion.div>
+              ) : (
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    padding: "3rem 1rem",
+                    color: "var(--text-tertiary)",
+                    fontSize: "0.875rem",
+                    textAlign: "center",
+                    gap: "0.75rem",
+                  }}
+                >
+                  <Brain size={32} strokeWidth={1.5} color="var(--text-tertiary)" />
+                  <p>Choose a goal to see a workflow in action.</p>
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
 
           {/* Result card */}
@@ -448,10 +505,10 @@ export default function AgentDemo() {
             {demoState === "complete" && selectedGoal && (
               <motion.div
                 key="result"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 10 }}
-                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }}
+                initial={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 20 }}
+                animate={shouldReduceMotion ? { opacity: 1 } : { opacity: 1, y: 0 }}
+                exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, y: 10 }}
+                transition={{ duration: DURATIONS.reveal, ease: EASE_REFINED }}
                 className="card"
                 style={{
                   padding: "1.5rem",
@@ -623,6 +680,6 @@ export default function AgentDemo() {
           }
         }
       `}</style>
-    </section>
+    </motion.section>
   );
 }

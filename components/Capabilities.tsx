@@ -1,8 +1,9 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { Bot, GitMerge, Lightbulb, Zap } from "lucide-react";
 import { CAPABILITIES } from "@/lib/mock-data";
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 const ICONS = [Bot, GitMerge, Lightbulb, Zap];
 
@@ -13,16 +14,21 @@ const ACCENT_COLORS: Record<string, string> = {
   purple: "#a855f7",
 };
 
-const fadeUp = {
-  hidden: { opacity: 0, y: 20 },
-  visible: (i: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, delay: i * 0.08, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  }),
-};
-
 export default function Capabilities() {
+  const shouldReduceMotion = useReducedMotion();
+
+  const fadeUp = shouldReduceMotion ? {
+    hidden: { opacity: 1, y: 0 },
+    visible: { opacity: 1, y: 0 }
+  } : {
+    hidden: { opacity: 0, y: 30 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: { duration: DURATIONS.reveal, delay: i * 0.1, ease: EASE_REFINED },
+    }),
+  };
+
   return (
     <section
       id="capabilities"
@@ -78,18 +84,36 @@ export default function Capabilities() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
-                  whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                  whileHover={shouldReduceMotion ? {} : "hover"}
                   className="card"
                   style={{
                     padding: "1.75rem",
                     cursor: "default",
                     position: "relative",
                     overflow: "hidden",
+                    border: "1px solid var(--border-default)"
+                  }}
+                  variants={{
+                    hidden: fadeUp.hidden,
+                    visible: fadeUp.visible(i),
+                    hover: {
+                      y: -3,
+                      boxShadow: "0 8px 24px 0 rgb(0 0 0 / 0.08)",
+                      borderColor: accentColor,
+                      transition: { duration: DURATIONS.micro, ease: EASE_REFINED }
+                    }
                   }}
                 >
                   {/* Accent stripe */}
-                  <div
+                  <motion.div
                     aria-hidden
+                    variants={{
+                      hover: {
+                        x: [ "-100%", "0%" ],
+                        opacity: [ 0.5, 1 ],
+                        transition: { duration: DURATIONS.normal, ease: EASE_REFINED }
+                      }
+                    }}
                     style={{
                       position: "absolute",
                       top: 0,
@@ -97,9 +121,16 @@ export default function Capabilities() {
                       right: 0,
                       height: 2,
                       background: `linear-gradient(90deg, ${accentColor}, transparent)`,
+                      transformOrigin: "left"
                     }}
                   />
-                  <div
+                  <motion.div
+                    variants={{
+                      hover: {
+                        scale: 1.05,
+                        transition: { duration: DURATIONS.fast, ease: EASE_REFINED }
+                      }
+                    }}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -113,7 +144,7 @@ export default function Capabilities() {
                     aria-hidden
                   >
                     <Icon size={18} color={accentColor} strokeWidth={2} />
-                  </div>
+                  </motion.div>
                   <h3
                     style={{
                       fontSize: "1rem",
@@ -161,13 +192,14 @@ export default function Capabilities() {
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
-                  whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                  whileHover={shouldReduceMotion ? {} : "hover"}
                   className="card"
                   style={{
                     padding: "1.75rem",
                     cursor: "default",
                     position: "relative",
                     overflow: "hidden",
+                    border: "1px solid var(--border-default)",
                     ...(isWide
                       ? {
                           display: "flex",
@@ -176,10 +208,27 @@ export default function Capabilities() {
                         }
                       : {}),
                   }}
+                  variants={{
+                    hidden: fadeUp.hidden,
+                    visible: fadeUp.visible(actualI),
+                    hover: {
+                      y: -3,
+                      boxShadow: "0 8px 24px 0 rgb(0 0 0 / 0.08)",
+                      borderColor: accentColor,
+                      transition: { duration: DURATIONS.micro, ease: EASE_REFINED }
+                    }
+                  }}
                 >
                   {/* Accent stripe */}
-                  <div
+                  <motion.div
                     aria-hidden
+                    variants={{
+                      hover: {
+                        x: [ "-100%", "0%" ],
+                        opacity: [ 0.5, 1 ],
+                        transition: { duration: DURATIONS.normal, ease: EASE_REFINED }
+                      }
+                    }}
                     style={{
                       position: "absolute",
                       top: 0,
@@ -187,9 +236,16 @@ export default function Capabilities() {
                       right: 0,
                       height: 2,
                       background: `linear-gradient(90deg, ${accentColor}, transparent)`,
+                      transformOrigin: "left"
                     }}
                   />
-                  <div
+                  <motion.div
+                    variants={{
+                      hover: {
+                        scale: 1.05,
+                        transition: { duration: DURATIONS.fast, ease: EASE_REFINED }
+                      }
+                    }}
                     style={{
                       display: "flex",
                       alignItems: "center",
@@ -204,7 +260,7 @@ export default function Capabilities() {
                     aria-hidden
                   >
                     <Icon size={18} color={accentColor} strokeWidth={2} />
-                  </div>
+                  </motion.div>
                   <div>
                     <h3
                       style={{

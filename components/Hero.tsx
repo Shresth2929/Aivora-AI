@@ -1,19 +1,37 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import WorkflowHero from "./WorkflowHero";
-
-const fadeUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: (delay: number) => ({
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] },
-  }),
-};
+import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 export default function Hero() {
+  const shouldReduceMotion = useReducedMotion();
+
+  /**
+   * Orchestrated entrance animation
+   * Sequence: Eyebrow → Headline → Subtitle → CTAs → Workflow → Disclaimer
+   * Total duration: ~1000-1200ms
+   * Feels like: product coming online, not intro animation
+   */
+  const safeFadeUp = shouldReduceMotion
+    ? {
+        hidden: { opacity: 1, y: 0 },
+        visible: { opacity: 1, y: 0 },
+      }
+    : {
+        hidden: { opacity: 0, y: 12 },
+        visible: (delay: number = 0) => ({
+          opacity: 1,
+          y: 0,
+          transition: {
+            duration: DURATIONS.reveal,
+            delay,
+            ease: EASE_REFINED,
+          },
+        }),
+      };
+
   return (
     <section
       aria-label="Hero — Aivora AI value proposition"
@@ -58,8 +76,8 @@ export default function Hero() {
         >
           {/* Eyebrow */}
           <motion.div
-            custom={0}
-            variants={fadeUp}
+            custom={0.1} // Eyebrow starts early (100ms)
+            variants={safeFadeUp}
             initial="hidden"
             animate="visible"
           >
@@ -81,8 +99,8 @@ export default function Hero() {
 
           {/* H1 */}
           <motion.h1
-            custom={0.1}
-            variants={fadeUp}
+            custom={0.2} // Headline at 200ms
+            variants={safeFadeUp}
             initial="hidden"
             animate="visible"
             className="text-display"
@@ -98,8 +116,8 @@ export default function Hero() {
 
           {/* Sub-copy */}
           <motion.p
-            custom={0.2}
-            variants={fadeUp}
+            custom={0.3} // Subtitle at 300ms
+            variants={safeFadeUp}
             initial="hidden"
             animate="visible"
             className="text-subtitle"
@@ -116,8 +134,8 @@ export default function Hero() {
 
           {/* CTAs */}
           <motion.div
-            custom={0.3}
-            variants={fadeUp}
+            custom={0.4} // CTAs at 400ms
+            variants={safeFadeUp}
             initial="hidden"
             animate="visible"
             style={{
@@ -149,8 +167,8 @@ export default function Hero() {
 
           {/* Disclaimer badge */}
           <motion.p
-            custom={0.45}
-            variants={fadeUp}
+            custom={0.65} // Disclaimer at 650ms
+            variants={safeFadeUp}
             initial="hidden"
             animate="visible"
             style={{
@@ -166,8 +184,8 @@ export default function Hero() {
 
         {/* Right: Workflow visualization */}
         <motion.div
-          custom={0.35}
-          variants={fadeUp}
+          custom={0.5} // Workflow at 500ms (overlaps with CTAs slightly for fluidity)
+          variants={safeFadeUp}
           initial="hidden"
           animate="visible"
           style={{

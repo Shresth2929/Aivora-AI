@@ -81,6 +81,9 @@ The project focuses on product thinking, frontend engineering, interaction desig
 
 ![Aivora Hero](./screenshots/hero-light.png)
 
+### Hero — Light Mode
+![Hero Light](./screenshots/final-cta.png)
+
 ### Workflow Demo — Market Research
 
 ![Market Research Workflow](./screenshots/hero-dark.png)
@@ -121,9 +124,6 @@ The project focuses on product thinking, frontend engineering, interaction desig
 
 ![Workflow Overview](./screenshots/live-demo-empty.png)
 
-### Final CTA
-
-![Final CTA](./screenshots/final-cta.png)
 
 ---
 

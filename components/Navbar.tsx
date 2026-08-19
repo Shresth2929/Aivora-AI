@@ -96,12 +96,12 @@ export default function Navbar() {
               }}
               aria-hidden
             >
-              <svg viewBox="0 0 28 28" aria-hidden="true" style={{ width: 17, height: 17 }}>
+              <svg viewBox="0 0 28 28" aria-hidden="true" style={{ width: 18, height: 18 }}>
                 <path
                   d="M7.5 18.5L13.8 7.5L20.5 18.5"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="2.1"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -109,17 +109,17 @@ export default function Navbar() {
                   d="M9.8 14.2H17.8"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="2.1"
                   strokeLinecap="round"
                 />
                 <path
                   d="M16.3 8.2C18.4 8.2 19.8 9.6 19.8 11.6"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.6"
+                  strokeWidth="1.8"
                   strokeLinecap="round"
                 />
-                <circle cx="20.5" cy="11.8" r="1.7" fill="currentColor" />
+                <circle cx="20.5" cy="11.8" r="1.9" fill="currentColor" />
               </svg>
             </span>
             <span

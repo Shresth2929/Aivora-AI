@@ -27,13 +27,12 @@ export default function Hero() {
   };
 
   const heroWordReveal = {
-    hidden: { opacity: 0, y: 16, filter: "blur(3px)" },
+    hidden: { opacity: 0, y: 8 },
     visible: (delay: number = 0) => ({
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: {
-        duration: DURATIONS.reveal,
+        duration: DURATIONS.reveal * 0.8,
         delay,
         ease: EASE_REFINED,
       },
@@ -145,7 +144,6 @@ export default function Hero() {
               variants={heroWordReveal}
               initial="hidden"
               animate="visible"
-              className="hero-action-word"
               style={{ display: "block" }}
             >
               action.
@@ -315,39 +313,6 @@ export default function Hero() {
       </div>
 
       <style>{`
-        .hero-action-word {
-          position: relative;
-          display: inline-block;
-          width: fit-content;
-          isolation: isolate;
-        }
-        .hero-action-word::after {
-          content: "";
-          position: absolute;
-          left: 0;
-          right: 0;
-          bottom: 0.08em;
-          height: 2px;
-          border-radius: 999px;
-          background: linear-gradient(90deg, transparent 0%, color-mix(in srgb, var(--accent) 42%, transparent) 12%, var(--accent) 50%, color-mix(in srgb, var(--accent) 42%, transparent) 88%, transparent 100%);
-          transform: scaleX(0);
-          transform-origin: left center;
-          animation: heroSignalReveal 620ms cubic-bezier(0.22, 1, 0.36, 1) 0.68s 1 both;
-          box-shadow: 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
-        }
-        @keyframes heroSignalReveal {
-          0% {
-            transform: scaleX(0);
-            opacity: 0.2;
-          }
-          35% {
-            opacity: 1;
-          }
-          100% {
-            transform: scaleX(1);
-            opacity: 0.9;
-          }
-        }
         @media (min-width: 1024px) {
           [aria-label="Hero — Aivora AI value proposition"] > div {
             grid-template-columns: 1fr 1fr !important;

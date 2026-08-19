@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { Menu, X, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
@@ -80,20 +80,47 @@ export default function Navbar() {
             }}
           >
             <span
+              className="brand-mark"
               style={{
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
                 width: 28,
                 height: 28,
-                borderRadius: "var(--radius-sm)",
-                background: "var(--accent)",
-                color: "#fff",
+                borderRadius: "0.625rem",
+                background: "var(--accent-subtle)",
+                border: "1px solid var(--accent-muted)",
+                color: "var(--accent)",
                 flexShrink: 0,
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.35)",
               }}
               aria-hidden
             >
-              <Zap size={14} strokeWidth={2.5} />
+              <svg viewBox="0 0 28 28" aria-hidden="true" style={{ width: 17, height: 17 }}>
+                <path
+                  d="M7.5 18.5L13.8 7.5L20.5 18.5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M9.8 14.2H17.8"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.8"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M16.3 8.2C18.4 8.2 19.8 9.6 19.8 11.6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+                <circle cx="20.5" cy="11.8" r="1.7" fill="currentColor" />
+              </svg>
             </span>
             <span
               style={{
@@ -239,9 +266,44 @@ export default function Navbar() {
 
       {/* Responsive + hover styles */}
       <style>{`
-        .nav-link:hover {
+        .brand-mark {
+          transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), border-color 180ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+          will-change: transform;
+        }
+        .brand-mark:hover,
+        .brand-mark:focus-visible {
+          transform: translateY(-1px) rotate(-3deg);
+          border-color: color-mix(in srgb, var(--accent) 58%, var(--accent-muted));
+          box-shadow: 0 6px 18px -10px var(--accent);
+        }
+        .nav-link {
+          position: relative;
+          overflow: visible;
+          transform: translateY(0);
+          transition: color 180ms cubic-bezier(0.22, 1, 0.36, 1), transform 180ms cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .nav-link::after {
+          content: "";
+          position: absolute;
+          left: 0.75rem;
+          right: 0.75rem;
+          bottom: 0.15rem;
+          height: 1.5px;
+          border-radius: 999px;
+          background: linear-gradient(90deg, transparent 0%, var(--accent) 18%, var(--accent) 82%, transparent 100%);
+          transform: scaleX(0);
+          transform-origin: left center;
+          transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms cubic-bezier(0.22, 1, 0.36, 1);
+          opacity: 0.8;
+        }
+        .nav-link:hover,
+        .nav-link:focus-visible {
           color: var(--text-primary) !important;
-          background: var(--bg-subtle) !important;
+          transform: translateY(-1px);
+        }
+        .nav-link:hover::after,
+        .nav-link:focus-visible::after {
+          transform: scaleX(1);
         }
         .theme-toggle:hover {
           background: var(--bg-muted) !important;

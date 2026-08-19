@@ -2,34 +2,36 @@
 
 ### Intelligent Workflow Orchestration
 
-Aivora is a premium frontend product concept that transforms natural-language business goals into structured AI workflows.
+Aivora is a premium AI product concept that transforms natural-language goals into structured workflows for **research, reasoning, decision-making, and action**.
 
-Instead of a traditional chatbot interface, Aivora focuses on **orchestrating workflows from goal to outcome**.
+Instead of another chatbot interface, Aivora explores an **AI orchestration experience** where intelligence flows from goal → workflow → outcome.
 
 ---
 
 ## 🚀 Live Demo
 
-**Live:** https://aivora-ai-theta.vercel.app/
+**Live Application:**  
+[Open Aivora]
 
-**GitHub:** https://github.com/Shresth2929/Aivora-AI
+**GitHub Repository:**  
+[View Source Code]
 
-> Aivora is a frontend prototype. Workflow demonstrations use deterministic mock data and do not perform real AI processing.
-
----
-
-## ✨ Features
-
-- **Interactive Workflow Demo** — Select a goal and watch a structured workflow progress through multiple stages.
-- **Workflow Builder** — Configure goal type, input source, and output format to generate a workflow.
-- **Goal → Outcome Visualization** — Visualizes how Aivora transforms an objective into a structured result.
-- **Light / Dark Mode** — Responsive theme switching with consistent visual design.
-- **Responsive UI** — Designed for mobile, tablet, and desktop viewports.
-- **Motion & Micro-interactions** — Subtle transitions and animations communicate workflow state and interaction.
+> Aivora is a frontend product prototype. Workflow demonstrations use deterministic mock data and do not perform real AI processing or external actions.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features
+
+- **Interactive Workflow Demo** — Select a goal and watch a multi-step workflow progress.
+- **Workflow Builder** — Configure goal, source, and output format to generate a workflow.
+- **Goal → Outcome Visualization** — Visualizes how Aivora reasons through a task.
+- **Dark / Light Mode** — Fully supported theme experience.
+- **Premium Motion System** — Framer Motion animations with restrained, product-focused interactions.
+- **Responsive Design** — Optimized across desktop, tablet, and mobile layouts.
+
+---
+
+## 🛠 Tech Stack
 
 - Next.js
 - React
@@ -41,63 +43,70 @@ Instead of a traditional chatbot interface, Aivora focuses on **orchestrating wo
 
 ---
 
-## 🖼️ Screenshots
+## 📸 Screenshots
 
-### Hero
+### Hero — Dark Mode
+![Aivora Hero](./screenshots/hero-dark.png)
 
-![Aivora Hero](./screenshots/hero-light.png)
-
-### Live Workflow Demo
-
-![Live Demo](./screenshots/live-demo-automation.png)
+### Hero — Light Mode
+![Aivora Hero Light](./screenshots/hero-light.png)
 
 ### Workflow Builder
-
 ![Workflow Builder](./screenshots/workflow-builder-light.png)
 
 ### Goal → Outcome
-
 ![Goal Outcome](./screenshots/goal-outcome-light.png)
 
 ### Capabilities
-
 ![Capabilities](./screenshots/capabilities-light.png)
 
-### Philosophy
-
-![Philosophy](./screenshots/philosophy-light.png)
-
-### Dark Mode
-
-![Dark Mode](./screenshots/hero-dark.png)
+### Live Workflow Demo
+![Live Demo](./screenshots/live-demo-automation.png)
 
 ---
 
-## 🏗️ Project Structure
+## 📁 Project Structure
 
 ```text
-app/            → Next.js application
-components/     → Reusable UI components
-lib/            → Mock workflow data
-public/         → Static assets
-screenshots/    → Application screenshots
+app/           → Next.js application
+components/    → Reusable UI components
+lib/           → Workflow / mock data
+public/        → Static assets
+screenshots/   → Application screenshots
+---
+⚡ Getting Started
 
-⚙️ Getting Started
-git clone https://github.com/Shresth2929/Aivora-AI.git
-cd Aivora-AI
+git clone <repository-url>
+cd aivora-ai
 npm install
 npm run dev
 
-Open http://localhost:3000.
+Open http://localhost:3000 to view the application.
+---
 
-📌 Scope
+🎯 Project Focus
 
-Aivora is currently a frontend product concept and interaction prototype, focused on product design, frontend engineering, workflow visualization, and interaction quality.
+Aivora was built as a frontend engineering and product design challenge, with emphasis on:
 
-Built with
+Product thinking
+Interaction design
+Component architecture
+Responsive UI
+Motion design
+Visual storytelling
 
-Next.js · React · TypeScript · Tailwind CSS · Framer Motion
+Core Concept
+Goal
+  ↓
+Aivora Agent
+  ↓
+Research
+  ↓
+Reasoning
+  ↓
+Action
+  ↓
+Outcome
+---
 
 Aivora AI — Turn ambitious goals into intelligent action.
-
-

@@ -343,6 +343,20 @@ body {
   border-radius: 99px;
 }
 
+/* ─── Theme Toggle Icons ─────────────────────────────────────────────────── */
+.theme-icon-sun {
+  display: none;
+}
+.theme-icon-moon {
+  display: block;
+}
+.dark .theme-icon-sun {
+  display: block;
+}
+.dark .theme-icon-moon {
+  display: none;
+}
+
 /* ─── Selection ──────────────────────────────────────────────────────────── */
 ::selection {
   background: var(--accent-muted);

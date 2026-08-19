@@ -41,10 +41,7 @@ export default function GoalOutcome() {
     return () => clearInterval(interval);
   }, [isInView, shouldReduceMotion, hasCompleted]);
 
-  const fadeUp = shouldReduceMotion ? {
-    hidden: { opacity: 1, y: 0 },
-    visible: { opacity: 1, y: 0 }
-  } : {
+  const fadeUp = {
     hidden: { opacity: 0, y: 30 },
     visible: (i: number) => ({
       opacity: 1,
@@ -110,20 +107,23 @@ export default function GoalOutcome() {
         >
           {/* Goal card */}
           <motion.div
-            custom={1}
-            variants={fadeUp}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="card"
-            whileHover={shouldReduceMotion ? {} : { y: -2 }}
-            animate={{
-              border: (activeStep >= 0 && !shouldReduceMotion) ? "1px solid var(--accent-muted)" : "1px solid var(--border-default)",
-              boxShadow: (activeStep >= 0 && !shouldReduceMotion) ? "0 4px 12px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? {
+              opacity: 1,
+              y: 0,
+              border: activeStep >= 0 ? "1px solid var(--accent-muted)" : "1px solid var(--border-default)",
+              boxShadow: activeStep >= 0 ? "0 4px 12px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
+            } : {
+              opacity: 0,
+              y: 30,
+              border: "1px solid var(--border-default)",
+              boxShadow: "var(--shadow-sm)",
             }}
             transition={{ duration: DURATIONS.normal }}
+            className="card"
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
             style={{ 
               padding: "1.75rem",
-              border: "1px solid var(--border-default)",
               position: "relative"
             }}
           >
@@ -217,15 +217,37 @@ export default function GoalOutcome() {
           >
             <div
               style={{
-                fontSize: "0.6875rem",
-                fontWeight: 700,
-                color: "var(--accent)",
-                textTransform: "uppercase",
-                letterSpacing: "0.08em",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
                 marginBottom: "1rem",
               }}
             >
-              Aivora Engine
+              <div
+                style={{
+                  fontSize: "0.6875rem",
+                  fontWeight: 700,
+                  color: "var(--accent)",
+                  textTransform: "uppercase",
+                  letterSpacing: "0.08em",
+                }}
+              >
+                Aivora Engine
+              </div>
+              <div
+                style={{
+                  fontSize: "0.625rem",
+                  fontWeight: 700,
+                  color: "var(--accent)",
+                  background: "color-mix(in srgb, var(--accent) 15%, var(--bg-surface))",
+                  padding: "0.15rem 0.45rem",
+                  borderRadius: "var(--radius-full)",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
+                }}
+              >
+                {activeStep >= 0 && activeStep < PIPELINE_STEPS.length ? `Step ${activeStep + 1}/5` : "Active"}
+              </div>
             </div>
             <div
               style={{
@@ -237,7 +259,6 @@ export default function GoalOutcome() {
               {PIPELINE_STEPS.map((step, i) => {
                 const isActive = activeStep === i;
                 const isPast = activeStep > i;
-                const isFuture = activeStep < i;
                 
                 return (
                   <div key={step}>
@@ -347,22 +368,25 @@ export default function GoalOutcome() {
 
           {/* Outcome card */}
           <motion.div
-            custom={5}
-            variants={fadeUp}
-            initial="hidden"
-            animate={isInView ? "visible" : "hidden"}
-            className="card"
-            whileHover={shouldReduceMotion ? {} : { y: -2 }}
-            animate={{
+            initial={{ opacity: 0, y: 30 }}
+            animate={isInView ? {
+              opacity: 1,
+              y: 0,
               borderColor: activeStep >= PIPELINE_STEPS.length 
                 ? "var(--success)" 
                 : "color-mix(in srgb, var(--success) 25%, var(--border-default))",
               boxShadow: activeStep >= PIPELINE_STEPS.length 
                 ? "0 4px 20px 0 rgb(61 154 106 / 0.15)"
                 : "var(--shadow-sm)",
-              scale: activeStep >= PIPELINE_STEPS.length && !shouldReduceMotion ? 1.02 : 1,
+              scale: activeStep >= PIPELINE_STEPS.length ? 1.02 : 1,
+            } : {
+              opacity: 0,
+              y: 30,
+              scale: 1,
             }}
             transition={{ duration: DURATIONS.normal }}
+            className="card"
+            whileHover={shouldReduceMotion ? {} : { y: -2 }}
             style={{
               padding: "1.75rem",
               border: "1px solid color-mix(in srgb, var(--success) 25%, var(--border-default))",

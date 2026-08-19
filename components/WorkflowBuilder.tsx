@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { ArrowDown, CheckCircle2, Target, Bot, Cpu, Brain, FileOutput } from "lucide-react";
+import { ArrowDown, CheckCircle2, Target, Cpu, Brain, FileOutput } from "lucide-react";
 import {
   getBuilderWorkflow,
   type GoalType,
@@ -223,144 +223,139 @@ export default function WorkflowBuilder() {
                 position: "relative"
               }}
             >
-              <AnimatePresence mode="popLayout">
-                {workflow.nodes.map((node, i) => {
-                  const Icon = NODE_ICONS[node.type] ?? Cpu;
-                  const isStart = node.type === "start";
-                  const isEnd = node.type === "end";
-                  const isDecision = node.type === "decision";
-                  const isLast = i === workflow.nodes.length - 1;
-                  
-                  // Use label + type as a stable key so React/Framer knows when nodes actually change
-                  const nodeKey = `${node.type}-${node.label}`;
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={`${goal}-${input}-${output}`}
+                  initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: DURATIONS.normal, ease: EASE_REFINED }}
+                  style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center" }}
+                >
+                  {workflow.nodes.map((node, i) => {
+                    const Icon = NODE_ICONS[node.type] ?? Cpu;
+                    const isStart = node.type === "start";
+                    const isEnd = node.type === "end";
+                    const isDecision = node.type === "decision";
+                    const isLast = i === workflow.nodes.length - 1;
 
-                  return (
-                    <motion.div
-                      layout={!shouldReduceMotion}
-                      key={nodeKey}
-                      initial={shouldReduceMotion ? { opacity: 1 } : { opacity: 0, scale: 0.9, y: -10 }}
-                      animate={{ opacity: 1, scale: 1, y: 0 }}
-                      exit={shouldReduceMotion ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: 10 }}
-                      transition={{ duration: DURATIONS.normal, ease: EASE_REFINED }}
-                      whileHover={shouldReduceMotion ? {} : { y: -2 }}
-                      style={{ 
-                        width: "100%", 
-                        display: "flex", 
-                        flexDirection: "column", 
-                        alignItems: "center",
-                        zIndex: workflow.nodes.length - i
-                      }}
-                    >
-                      <motion.div
-                        layout={!shouldReduceMotion}
-                        whileHover={shouldReduceMotion ? {} : { y: -2 }}
-                        transition={{ duration: DURATIONS.micro, ease: EASE_REFINED }}
-                        style={{
-                          display: "flex",
+                    return (
+                      <div
+                        key={`${node.type}-${node.label}`}
+                        style={{ 
+                          width: "100%", 
+                          display: "flex", 
+                          flexDirection: "column", 
                           alignItems: "center",
-                          gap: "0.75rem",
-                          padding: "0.625rem 1rem",
-                          width: "100%",
-                          background: isStart
-                            ? "var(--bg-subtle)"
-                            : isEnd
-                              ? "color-mix(in srgb, var(--success) 8%, var(--bg-surface))"
-                              : isDecision
-                                ? "var(--accent-subtle)"
-                                : "var(--bg-surface)",
-                          border: isStart
-                            ? "1px solid var(--border-default)"
-                            : isEnd
-                              ? "1px solid color-mix(in srgb, var(--success) 25%, var(--border-default))"
-                              : isDecision
-                                ? "1px solid var(--accent-muted)"
-                                : "1px solid var(--border-default)",
-                          borderRadius: "var(--radius-md)",
-                          boxShadow: isDecision ? "0 2px 8px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
-                          transition: "box-shadow 300ms",
+                          zIndex: workflow.nodes.length - i
                         }}
                       >
-                        <span
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                            width: 28,
-                            height: 28,
-                            borderRadius: "var(--radius-sm)",
-                            background: isEnd
-                              ? "color-mix(in srgb, var(--success) 15%, var(--bg-muted))"
-                              : isDecision
-                                ? "var(--accent)"
-                                : "var(--bg-muted)",
-                            flexShrink: 0,
-                          }}
-                        >
-                          {isEnd ? (
-                            <CheckCircle2 size={13} color="var(--success)" strokeWidth={2.5} />
-                          ) : (
-                            <Icon
-                              size={13}
-                              color={isDecision ? "#fff" : "var(--text-secondary)"}
-                              strokeWidth={2}
-                            />
-                          )}
-                        </span>
-                        <div>
-                          <div
-                            style={{
-                              fontSize: "0.8125rem",
-                              fontWeight: 600,
-                              color: isDecision
-                                ? "var(--accent)"
-                                : isEnd
-                                  ? "var(--success)"
-                                  : "var(--text-primary)",
-                            }}
-                          >
-                            {node.label}
-                          </div>
-                          <div
-                            style={{
-                              fontSize: "0.6875rem",
-                              color: "var(--text-tertiary)",
-                            }}
-                          >
-                            {node.sublabel}
-                          </div>
-                        </div>
-                      </motion.div>
-                      {!isLast && (
                         <motion.div
-                          layout={!shouldReduceMotion}
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 20, opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          transition={{ duration: DURATIONS.fast, ease: "easeOut" }}
+                          whileHover={shouldReduceMotion ? {} : { y: -2 }}
+                          transition={{ duration: DURATIONS.micro, ease: EASE_REFINED }}
                           style={{
                             display: "flex",
-                            justifyContent: "center",
                             alignItems: "center",
+                            gap: "0.75rem",
+                            padding: "0.625rem 1rem",
                             width: "100%",
-                            overflow: "hidden"
+                            background: isStart
+                              ? "var(--bg-subtle)"
+                              : isEnd
+                                ? "color-mix(in srgb, var(--success) 8%, var(--bg-surface))"
+                                : isDecision
+                                  ? "var(--accent-subtle)"
+                                  : "var(--bg-surface)",
+                            border: isStart
+                              ? "1px solid var(--border-default)"
+                              : isEnd
+                                ? "1px solid color-mix(in srgb, var(--success) 25%, var(--border-default))"
+                                : isDecision
+                                  ? "1px solid var(--accent-muted)"
+                                  : "1px solid var(--border-default)",
+                            borderRadius: "var(--radius-md)",
+                            boxShadow: isDecision ? "0 2px 8px 0 rgb(91 91 214 / 0.1)" : "var(--shadow-sm)",
+                            transition: "box-shadow 300ms",
                           }}
                         >
-                          <motion.div
-                            animate={{ y: [0, 4, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                          <span
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              width: 28,
+                              height: 28,
+                              borderRadius: "var(--radius-sm)",
+                              background: isEnd
+                                ? "color-mix(in srgb, var(--success) 15%, var(--bg-muted))"
+                                : isDecision
+                                  ? "var(--accent)"
+                                  : "var(--bg-muted)",
+                              flexShrink: 0,
+                            }}
                           >
-                            <ArrowDown
-                              size={14}
-                              color={isDecision ? "var(--accent)" : "var(--border-strong)"}
-                              strokeWidth={1.5}
-                              aria-hidden
-                            />
-                          </motion.div>
+                            {isEnd ? (
+                              <CheckCircle2 size={13} color="var(--success)" strokeWidth={2.5} />
+                            ) : (
+                              <Icon
+                                size={13}
+                                color={isDecision ? "#fff" : "var(--text-secondary)"}
+                                strokeWidth={2}
+                              />
+                            )}
+                          </span>
+                          <div>
+                            <div
+                              style={{
+                                fontSize: "0.8125rem",
+                                fontWeight: 600,
+                                color: isDecision
+                                  ? "var(--accent)"
+                                  : isEnd
+                                    ? "var(--success)"
+                                    : "var(--text-primary)",
+                              }}
+                            >
+                              {node.label}
+                            </div>
+                            <div
+                              style={{
+                                fontSize: "0.6875rem",
+                                color: "var(--text-tertiary)",
+                              }}
+                            >
+                              {node.sublabel}
+                            </div>
+                          </div>
                         </motion.div>
-                      )}
-                    </motion.div>
-                  );
-                })}
+                        {!isLast && (
+                          <div
+                            style={{
+                              display: "flex",
+                              justifyContent: "center",
+                              alignItems: "center",
+                              width: "100%",
+                              height: 20,
+                              overflow: "hidden"
+                            }}
+                          >
+                            <motion.div
+                              animate={isDecision && !shouldReduceMotion ? { y: [0, 3, 0] } : { y: 0 }}
+                              transition={isDecision && !shouldReduceMotion ? { duration: 1.8, repeat: Infinity, ease: "easeInOut" } : {}}
+                            >
+                              <ArrowDown
+                                size={14}
+                                color={isDecision ? "var(--accent)" : "var(--border-strong)"}
+                                strokeWidth={1.5}
+                                aria-hidden
+                              />
+                            </motion.div>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
+                </motion.div>
               </AnimatePresence>
             </div>
           </div>

@@ -87,7 +87,7 @@ function EasterEgg({ active, onDismiss }: { active: boolean; onDismiss: () => vo
 }
 
 export default function HomePage() {
-  const [konamiBuffer, setKonamiBuffer] = useState<string[]>([]);
+  const [, setKonamiBuffer] = useState<string[]>([]);
   const [easterEgg, setEasterEgg] = useState(false);
 
   useEffect(() => {

@@ -17,18 +17,6 @@ const ACCENT_COLORS: Record<string, string> = {
 export default function Capabilities() {
   const shouldReduceMotion = useReducedMotion();
 
-  const fadeUp = shouldReduceMotion ? {
-    hidden: { opacity: 1, y: 0 },
-    visible: { opacity: 1, y: 0 }
-  } : {
-    hidden: { opacity: 0, y: 30 },
-    visible: (i: number) => ({
-      opacity: 1,
-      y: 0,
-      transition: { duration: DURATIONS.reveal, delay: i * 0.1, ease: EASE_REFINED },
-    }),
-  };
-
   return (
     <section
       id="capabilities"
@@ -79,12 +67,10 @@ export default function Capabilities() {
               return (
                 <motion.div
                   key={cap.id}
-                  custom={i}
-                  variants={fadeUp}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
-                  whileHover={shouldReduceMotion ? {} : "hover"}
+                  whileHover={shouldReduceMotion ? undefined : "hover"}
                   className="card"
                   style={{
                     padding: "1.75rem",
@@ -94,8 +80,12 @@ export default function Capabilities() {
                     border: "1px solid var(--border-default)"
                   }}
                   variants={{
-                    hidden: fadeUp.hidden,
-                    visible: fadeUp.visible(i),
+                    hidden: { opacity: 0, y: 20 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: DURATIONS.reveal, delay: i * 0.1, ease: EASE_REFINED }
+                    },
                     hover: {
                       y: -3,
                       boxShadow: "0 8px 24px 0 rgb(0 0 0 / 0.08)",
@@ -187,12 +177,10 @@ export default function Capabilities() {
               return (
                 <motion.div
                   key={cap.id}
-                  custom={actualI}
-                  variants={fadeUp}
                   initial="hidden"
                   whileInView="visible"
                   viewport={{ once: true, amount: 0.2 }}
-                  whileHover={shouldReduceMotion ? {} : "hover"}
+                  whileHover={shouldReduceMotion ? undefined : "hover"}
                   className="card"
                   style={{
                     padding: "1.75rem",
@@ -209,8 +197,12 @@ export default function Capabilities() {
                       : {}),
                   }}
                   variants={{
-                    hidden: fadeUp.hidden,
-                    visible: fadeUp.visible(actualI),
+                    hidden: { opacity: 0, y: 20 },
+                    visible: {
+                      opacity: 1,
+                      y: 0,
+                      transition: { duration: DURATIONS.reveal, delay: actualI * 0.1, ease: EASE_REFINED }
+                    },
                     hover: {
                       y: -3,
                       boxShadow: "0 8px 24px 0 rgb(0 0 0 / 0.08)",

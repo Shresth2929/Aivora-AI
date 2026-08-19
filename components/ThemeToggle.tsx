@@ -1,47 +1,30 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { Sun, Moon } from "lucide-react";
 
 export default function ThemeToggle() {
-  const [isDark, setIsDark] = useState(false);
-  const [mounted, setMounted] = useState(false);
-
   useEffect(() => {
-    setMounted(true);
-    setIsDark(document.documentElement.classList.contains("dark"));
+    try {
+      const stored = localStorage.getItem("aivora-theme");
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      if (stored === "dark" || (!stored && prefersDark)) {
+        document.documentElement.classList.add("dark");
+      } else if (stored === "light") {
+        document.documentElement.classList.remove("dark");
+      }
+    } catch {}
   }, []);
 
   const toggle = () => {
-    const next = !isDark;
-    setIsDark(next);
-    if (next) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("aivora-theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("aivora-theme", "light");
-    }
+    const isDark = document.documentElement.classList.toggle("dark");
+    localStorage.setItem("aivora-theme", isDark ? "dark" : "light");
   };
-
-  if (!mounted) {
-    return (
-      <div
-        style={{
-          width: 36,
-          height: 36,
-          borderRadius: "var(--radius-full)",
-          background: "var(--bg-subtle)",
-        }}
-        aria-hidden
-      />
-    );
-  }
 
   return (
     <button
       onClick={toggle}
-      aria-label={isDark ? "Switch to light mode" : "Switch to dark mode"}
+      aria-label="Toggle light or dark theme"
       style={{
         display: "inline-flex",
         alignItems: "center",
@@ -58,7 +41,8 @@ export default function ThemeToggle() {
       }}
       className="theme-toggle"
     >
-      {isDark ? <Sun size={15} strokeWidth={2} /> : <Moon size={15} strokeWidth={2} />}
+      <Sun size={15} strokeWidth={2} className="theme-icon-sun" />
+      <Moon size={15} strokeWidth={2} className="theme-icon-moon" />
     </button>
   );
 }

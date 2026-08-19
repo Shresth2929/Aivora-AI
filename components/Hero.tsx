@@ -1,12 +1,11 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { ArrowRight, ChevronRight } from "lucide-react";
 import WorkflowHero from "./WorkflowHero";
 import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 
 export default function Hero() {
-  const shouldReduceMotion = useReducedMotion();
 
   /**
    * Orchestrated entrance animation
@@ -14,23 +13,18 @@ export default function Hero() {
    * Total duration: ~1000-1200ms
    * Feels like: product coming online, not intro animation
    */
-  const safeFadeUp = shouldReduceMotion
-    ? {
-        hidden: { opacity: 1, y: 0 },
-        visible: { opacity: 1, y: 0 },
-      }
-    : {
-        hidden: { opacity: 0, y: 12 },
-        visible: (delay: number = 0) => ({
-          opacity: 1,
-          y: 0,
-          transition: {
-            duration: DURATIONS.reveal,
-            delay,
-            ease: EASE_REFINED,
-          },
-        }),
-      };
+  const fadeUp = {
+    hidden: { opacity: 0, y: 12 },
+    visible: (delay: number = 0) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: DURATIONS.reveal,
+        delay,
+        ease: EASE_REFINED,
+      },
+    }),
+  };
 
   return (
     <section
@@ -77,7 +71,7 @@ export default function Hero() {
           {/* Eyebrow */}
           <motion.div
             custom={0.1} // Eyebrow starts early (100ms)
-            variants={safeFadeUp}
+            variants={fadeUp}
             initial="hidden"
             animate="visible"
           >
@@ -100,7 +94,7 @@ export default function Hero() {
           {/* H1 */}
           <motion.h1
             custom={0.2} // Headline at 200ms
-            variants={safeFadeUp}
+            variants={fadeUp}
             initial="hidden"
             animate="visible"
             className="text-display"
@@ -117,7 +111,7 @@ export default function Hero() {
           {/* Sub-copy */}
           <motion.p
             custom={0.3} // Subtitle at 300ms
-            variants={safeFadeUp}
+            variants={fadeUp}
             initial="hidden"
             animate="visible"
             className="text-subtitle"
@@ -135,7 +129,7 @@ export default function Hero() {
           {/* CTAs */}
           <motion.div
             custom={0.4} // CTAs at 400ms
-            variants={safeFadeUp}
+            variants={fadeUp}
             initial="hidden"
             animate="visible"
             style={{
@@ -168,7 +162,7 @@ export default function Hero() {
           {/* Disclaimer badge */}
           <motion.p
             custom={0.65} // Disclaimer at 650ms
-            variants={safeFadeUp}
+            variants={fadeUp}
             initial="hidden"
             animate="visible"
             style={{
@@ -185,7 +179,7 @@ export default function Hero() {
         {/* Right: Workflow visualization */}
         <motion.div
           custom={0.5} // Workflow at 500ms (overlaps with CTAs slightly for fluidity)
-          variants={safeFadeUp}
+          variants={fadeUp}
           initial="hidden"
           animate="visible"
           style={{
@@ -210,37 +204,66 @@ export default function Hero() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
+                justifyContent: "space-between",
                 marginBottom: "1.25rem",
                 paddingBottom: "0.875rem",
                 borderBottom: "1px solid var(--border-subtle)",
               }}
             >
-              <span
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span
+                  style={{
+                    display: "flex",
+                    gap: "0.375rem",
+                  }}
+                  aria-hidden
+                >
+                  {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
+                    <span
+                      key={c}
+                      style={{ width: 8, height: 8, borderRadius: "50%", background: c }}
+                    />
+                  ))}
+                </span>
+                <span
+                  style={{
+                    fontSize: "0.6875rem",
+                    color: "var(--text-tertiary)",
+                    fontWeight: 600,
+                    marginLeft: "0.25rem",
+                    letterSpacing: "0.04em",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  aivora pipeline
+                </span>
+              </div>
+              <div
                 style={{
-                  display: "flex",
+                  display: "inline-flex",
+                  alignItems: "center",
                   gap: "0.375rem",
-                }}
-                aria-hidden
-              >
-                {["#ff5f57", "#febc2e", "#28c840"].map((c) => (
-                  <span
-                    key={c}
-                    style={{ width: 8, height: 8, borderRadius: "50%", background: c }}
-                  />
-                ))}
-              </span>
-              <span
-                style={{
-                  fontSize: "0.6875rem",
-                  color: "var(--text-tertiary)",
-                  fontWeight: 500,
-                  marginLeft: "0.25rem",
-                  letterSpacing: "0.02em",
+                  fontSize: "0.625rem",
+                  fontWeight: 700,
+                  color: "var(--accent)",
+                  background: "var(--accent-subtle)",
+                  padding: "0.2rem 0.5rem",
+                  borderRadius: "var(--radius-full)",
+                  letterSpacing: "0.04em",
+                  textTransform: "uppercase",
                 }}
               >
-                aivora workflow
-              </span>
+                <span
+                  style={{
+                    width: 5,
+                    height: 5,
+                    borderRadius: "50%",
+                    background: "var(--accent)",
+                  }}
+                  aria-hidden
+                />
+                Live
+              </div>
             </div>
             <WorkflowHero />
           </div>

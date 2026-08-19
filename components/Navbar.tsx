@@ -7,9 +7,9 @@ import { Menu, X, Zap } from "lucide-react";
 import ThemeToggle from "./ThemeToggle";
 
 const NAV_LINKS = [
-  { label: "Product", href: "#capabilities" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Capabilities", href: "#capabilities" },
+  { label: "Philosophy", href: "#philosophy" },
 ];
 
 export default function Navbar() {

@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import { PRINCIPLES } from "@/lib/mock-data";
 import { Target, GitBranch, Package } from "lucide-react";
 import { EASE_REFINED, DURATIONS } from "@/lib/motion";
@@ -8,12 +8,8 @@ import { EASE_REFINED, DURATIONS } from "@/lib/motion";
 const PRINCIPLE_ICONS = [Target, GitBranch, Package];
 
 export default function Philosophy() {
-  const shouldReduceMotion = useReducedMotion();
 
-  const fadeUp = shouldReduceMotion ? {
-    hidden: { opacity: 1, y: 0 },
-    visible: { opacity: 1, y: 0 }
-  } : {
+  const fadeUp = {
     hidden: { opacity: 0, y: 20 },
     visible: (i: number) => ({
       opacity: 1,
@@ -24,6 +20,7 @@ export default function Philosophy() {
 
   return (
     <section
+      id="philosophy"
       className="section"
       aria-label="Product philosophy — built around outcomes"
       style={{
@@ -61,7 +58,7 @@ export default function Philosophy() {
               Built around
               <br />
               <motion.span 
-                initial={shouldReduceMotion ? { color: "var(--accent)" } : { color: "var(--text-primary)" }}
+                initial={{ color: "var(--text-primary)" }}
                 whileInView={{ color: "var(--accent)" }}
                 viewport={{ once: true, amount: 0.8 }}
                 transition={{ duration: 1, delay: 0.5, ease: EASE_REFINED }}

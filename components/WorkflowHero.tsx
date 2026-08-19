@@ -18,6 +18,7 @@ const HERO_NODES = [
     id: "goal",
     label: "Goal",
     sublabel: "Define your objective",
+    detail: "Parses natural intent",
     icon: Target,
     color: "var(--text-secondary)",
     type: "start",
@@ -26,6 +27,7 @@ const HERO_NODES = [
     id: "agent",
     label: "Aivora Agent",
     sublabel: "Orchestrating workflow",
+    detail: "Decomposes execution graph",
     icon: Brain,
     color: "var(--accent)",
     type: "core",
@@ -34,6 +36,7 @@ const HERO_NODES = [
     id: "research",
     label: "Research",
     sublabel: "Gathering information",
+    detail: "Aggregates contextual signals",
     icon: Search,
     color: "var(--text-secondary)",
     type: "process",
@@ -42,6 +45,7 @@ const HERO_NODES = [
     id: "reason",
     label: "Reasoning",
     sublabel: "Synthesizing insights",
+    detail: "Evaluates choices & trade-offs",
     icon: GitBranch,
     color: "var(--text-secondary)",
     type: "process",
@@ -50,6 +54,7 @@ const HERO_NODES = [
     id: "action",
     label: "Action",
     sublabel: "Executing decisions",
+    detail: "Runs structured steps",
     icon: Zap,
     color: "var(--text-secondary)",
     type: "process",
@@ -58,6 +63,7 @@ const HERO_NODES = [
     id: "outcome",
     label: "Outcome",
     sublabel: "Actionable deliverable",
+    detail: "Delivers verified result",
     icon: CheckCircle2,
     color: "var(--success)",
     type: "end",
@@ -91,19 +97,12 @@ const connectorVariants = {
 export default function WorkflowHero() {
   const shouldReduceMotion = useReducedMotion();
   const [activeIndex, setActiveIndex] = useState(-1);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
   const [hasStarted, setHasStarted] = useState(false);
 
-  /**
-   * Signal flow animation cycle:
-   * Goal (input) → Aivora Agent (reasoning engine) → Research → Reasoning → Action → Outcome (result)
-   * 
-   * Timing: ~450ms per node → ~3s through pipeline + 1.5s pause at outcome
-   * Total cycle: ~4.5s
-   */
   useEffect(() => {
     if (shouldReduceMotion) return;
 
-    // Delay initial start for coordination with entrance animation
     const startTimer = setTimeout(() => {
       setHasStarted(true);
     }, 800);
@@ -112,7 +111,7 @@ export default function WorkflowHero() {
   }, [shouldReduceMotion]);
 
   useEffect(() => {
-    if (shouldReduceMotion || !hasStarted) return;
+    if (shouldReduceMotion || !hasStarted || hoveredIndex !== null) return;
 
     const totalNodes = HERO_NODES.length;
     let timer: NodeJS.Timeout;
@@ -124,15 +123,16 @@ export default function WorkflowHero() {
       });
     };
 
-    // If we're at the end (outcome emphasized), pause longer before restarting
     if (activeIndex === totalNodes) {
-      timer = setTimeout(cycle, 1200); // 1.2s pause at outcome
+      timer = setTimeout(cycle, 1200);
     } else {
-      timer = setTimeout(cycle, 500); // 500ms per step (slightly longer for better perception)
+      timer = setTimeout(cycle, 550);
     }
 
     return () => clearTimeout(timer);
-  }, [activeIndex, shouldReduceMotion, hasStarted]);
+  }, [activeIndex, hoveredIndex, shouldReduceMotion, hasStarted]);
+
+  const effectiveActive = hoveredIndex !== null ? hoveredIndex : activeIndex;
 
   return (
     <motion.div
@@ -155,9 +155,12 @@ export default function WorkflowHero() {
         const isCore = node.type === "core";
         const isEnd = node.type === "end";
         const isLast = i === HERO_NODES.length - 1;
-        const isActive = i === activeIndex;
+        const isActive = i === effectiveActive;
+        const isHovered = i === hoveredIndex;
 
-        // Base styles for node
+        // Dim unrelated nodes when hovering
+        const isDimmed = hoveredIndex !== null && Math.abs(hoveredIndex - i) > 1;
+
         const bg = isCore
           ? "var(--accent-subtle)"
           : isEnd
@@ -170,11 +173,10 @@ export default function WorkflowHero() {
             ? "1px solid color-mix(in srgb, var(--success) 25%, var(--border-default))"
             : "1px solid var(--border-default)";
 
-        // Active state styles
         const activeBg = isCore
-          ? "color-mix(in srgb, var(--accent) 15%, var(--bg-surface))"
+          ? "color-mix(in srgb, var(--accent) 18%, var(--bg-surface))"
           : isEnd
-            ? "color-mix(in srgb, var(--success) 15%, var(--bg-surface))"
+            ? "color-mix(in srgb, var(--success) 18%, var(--bg-surface))"
             : "var(--bg-subtle)";
         
         const activeBorder = isCore
@@ -186,17 +188,22 @@ export default function WorkflowHero() {
         return (
           <div key={node.id} style={{ display: "flex", flexDirection: "column" }}>
             <motion.div
-              variants={shouldReduceMotion ? { hidden: {opacity: 1, x: 0}, visible: {opacity: 1, x: 0} } : nodeVariants}
-              whileHover={shouldReduceMotion ? {} : {
-                y: -2,
-                transition: { duration: DURATIONS.micro, ease: EASE_REFINED },
-              }}
+              onMouseEnter={() => setHoveredIndex(i)}
+              onMouseLeave={() => setHoveredIndex(null)}
+              onFocus={() => setHoveredIndex(i)}
+              onBlur={() => setHoveredIndex(null)}
+              tabIndex={0}
+              role="button"
+              aria-label={`${node.label} step: ${node.sublabel}`}
+              variants={nodeVariants}
               animate={{
                 backgroundColor: isActive ? activeBg : bg,
                 borderColor: isActive ? activeBorder.replace("1px solid ", "") : border.replace("1px solid ", ""),
+                opacity: isDimmed ? 0.55 : 1,
+                scale: isHovered && !shouldReduceMotion ? 1.02 : 1,
                 boxShadow: isActive
-                  ? isCore ? "0 4px 20px 0 rgb(91 91 214 / 0.15)" 
-                    : isEnd ? "0 4px 20px 0 rgb(61 154 106 / 0.15)"
+                  ? isCore ? "0 4px 20px 0 rgb(91 91 214 / 0.18)" 
+                    : isEnd ? "0 4px 20px 0 rgb(61 154 106 / 0.18)"
                     : "var(--shadow-md)"
                   : isCore ? "var(--shadow-md)"
                   : "var(--shadow-sm)",
@@ -210,16 +217,16 @@ export default function WorkflowHero() {
                 backgroundColor: bg,
                 border,
                 borderRadius: "var(--radius-md)",
-                boxShadow: isCore ? "var(--shadow-md)" : "var(--shadow-sm)",
-                cursor: "default",
+                cursor: "pointer",
                 position: "relative",
+                outline: "none",
               }}
             >
               <motion.span
                 animate={{
-                  scale: isActive ? 1.05 : 1,
-                  backgroundColor: isActive && !isCore && !isEnd ? "color-mix(in srgb, var(--text-primary) 5%, var(--bg-subtle))" : 
-                    isCore ? "var(--accent)" : isEnd ? "color-mix(in srgb, var(--success) 15%, var(--bg-subtle))" : "var(--bg-subtle)"
+                  scale: isActive ? 1.08 : 1,
+                  backgroundColor: isActive && !isCore && !isEnd ? "color-mix(in srgb, var(--accent) 12%, var(--bg-subtle))" : 
+                    isCore ? "var(--accent)" : isEnd ? "color-mix(in srgb, var(--success) 18%, var(--bg-subtle))" : "var(--bg-subtle)"
                 }}
                 transition={{ duration: DURATIONS.fast }}
                 style={{
@@ -235,20 +242,45 @@ export default function WorkflowHero() {
                 <Icon
                   size={15}
                   strokeWidth={isCore || isActive ? 2.5 : 2}
-                  color={isCore ? "#fff" : isActive ? "var(--text-primary)" : node.color}
+                  color={isCore ? "#fff" : isActive ? "var(--accent)" : node.color}
                 />
               </motion.span>
+
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div
                   style={{
-                    fontSize: "0.8125rem",
-                    fontWeight: 600,
-                    color: isCore ? "var(--accent)" : isActive ? "var(--text-primary)" : "var(--text-primary)",
-                    letterSpacing: "-0.01em",
-                    transition: "color 200ms ease",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "space-between",
                   }}
                 >
-                  {node.label}
+                  <span
+                    style={{
+                      fontSize: "0.8125rem",
+                      fontWeight: 600,
+                      color: isCore ? "var(--accent)" : isActive ? "var(--text-primary)" : "var(--text-primary)",
+                      letterSpacing: "-0.01em",
+                      transition: "color 200ms ease",
+                    }}
+                  >
+                    {node.label}
+                  </span>
+                  {isHovered && (
+                    <span
+                      style={{
+                        fontSize: "0.625rem",
+                        fontWeight: 700,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.06em",
+                        color: "var(--accent)",
+                        background: "var(--accent-subtle)",
+                        padding: "0.125rem 0.375rem",
+                        borderRadius: "var(--radius-sm)",
+                      }}
+                    >
+                      Inspecting
+                    </span>
+                  )}
                 </div>
                 <div
                   style={{
@@ -258,7 +290,7 @@ export default function WorkflowHero() {
                     transition: "color 200ms ease",
                   }}
                 >
-                  {node.sublabel}
+                  {isHovered ? node.detail : node.sublabel}
                 </div>
               </div>
               
@@ -269,7 +301,7 @@ export default function WorkflowHero() {
                     shouldReduceMotion ? {} :
                     { 
                       opacity: isActive ? [0.6, 1, 0.6] : [0.2, 0.5, 0.2],
-                      scale: isActive ? [1, 1.2, 1] : 1 
+                      scale: isActive ? [1, 1.25, 1] : 1 
                     }
                   }
                   transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
@@ -284,11 +316,11 @@ export default function WorkflowHero() {
                 />
               )}
               
-              {/* Success checkmark */}
+              {/* Outcome status arrow */}
               {isEnd && (
                 <motion.div
                   animate={{ 
-                    scale: isActive ? [1, 1.1, 1] : 1,
+                    scale: isActive ? [1, 1.15, 1] : 1,
                     opacity: isActive ? 1 : 0.7
                   }}
                   transition={{ duration: 0.4 }}
@@ -306,11 +338,12 @@ export default function WorkflowHero() {
 
             {!isLast && (
               <motion.div
-                variants={shouldReduceMotion ? { hidden: {scaleY: 1}, visible: {scaleY: 1} } : connectorVariants}
+                variants={connectorVariants}
                 animate={{
-                  background: isActive
+                  background: isActive || (hoveredIndex !== null && hoveredIndex === i + 1)
                     ? "linear-gradient(to bottom, var(--border-default), var(--accent))"
                     : "linear-gradient(to bottom, var(--border-default), var(--border-subtle))",
+                  opacity: isDimmed ? 0.3 : 1
                 }}
                 transition={{ duration: DURATIONS.normal }}
                 style={{
@@ -326,8 +359,7 @@ export default function WorkflowHero() {
                 }}
                 aria-hidden
               >
-                {/* Active signal traveling down connector */}
-                {!shouldReduceMotion && isActive && (
+                {!shouldReduceMotion && (isActive || hoveredIndex === i) && (
                   <motion.div
                     initial={{ y: "-100%" }}
                     animate={{ y: "100%" }}

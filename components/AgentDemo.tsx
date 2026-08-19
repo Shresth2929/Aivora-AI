@@ -347,12 +347,14 @@ export default function AgentDemo() {
 
         {/* Main demo panel */}
         <div
+          className={`agent-demo-grid ${demoState === "complete" ? "has-result" : ""}`}
           style={{
             display: "grid",
             gridTemplateColumns: "1fr",
             gap: "1.25rem",
-            maxWidth: 800,
+            maxWidth: demoState === "complete" ? 900 : 640,
             margin: "0 auto",
+            transition: "max-width 400ms ease",
           }}
         >
           {/* Left: workflow steps */}
@@ -433,6 +435,23 @@ export default function AgentDemo() {
                 </button>
               </div>
             </div>
+
+            {/* Progress bar during execution */}
+            {demoState === "running" && selectedGoal && (
+              <div style={{ marginBottom: "1.25rem", padding: "0.75rem 0.875rem", background: "var(--accent-subtle)", border: "1px solid var(--accent-muted)", borderRadius: "var(--radius-md)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.6875rem", fontWeight: 700, color: "var(--accent)", letterSpacing: "0.06em", textTransform: "uppercase", marginBottom: "0.375rem" }}>
+                  <span>Executing step {Math.max(1, activeStep + 1)} of {selectedGoal.steps.length}</span>
+                  <span>{Math.min(100, Math.round(((completedSteps.size) / selectedGoal.steps.length) * 100))}%</span>
+                </div>
+                <div style={{ height: 4, borderRadius: 99, background: "var(--bg-muted)", overflow: "hidden" }}>
+                  <motion.div
+                    animate={{ width: `${Math.min(100, Math.round(((completedSteps.size) / selectedGoal.steps.length) * 100))}%` }}
+                    transition={{ duration: 0.3, ease: EASE_REFINED }}
+                    style={{ height: "100%", background: "var(--accent)" }}
+                  />
+                </div>
+              </div>
+            )}
 
             {/* Steps */}
             <AnimatePresence mode="popLayout">
@@ -674,9 +693,10 @@ export default function AgentDemo() {
       </div>
 
       <style>{`
-        @media (min-width: 768px) {
-          [aria-label="Interactive AI workflow demonstration"] .container-default > div > div {
-            grid-template-columns: 1fr !important;
+        @media (min-width: 900px) {
+          .agent-demo-grid.has-result {
+            grid-template-columns: 1fr 1fr !important;
+            align-items: start !important;
           }
         }
       `}</style>

@@ -2,9 +2,9 @@ import Link from "next/link";
 import { Zap, ExternalLink } from "lucide-react";
 
 const FOOTER_LINKS = [
-  { label: "Product", href: "#capabilities" },
   { label: "How it works", href: "#how-it-works" },
   { label: "Capabilities", href: "#capabilities" },
+  { label: "Philosophy", href: "#philosophy" },
   { label: "GitHub", href: "https://github.com", external: true },
 ];
 

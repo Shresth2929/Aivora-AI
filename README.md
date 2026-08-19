@@ -101,20 +101,3 @@ Next.js · React · TypeScript · Tailwind CSS · Framer Motion
 Aivora AI — Turn ambitious goals into intelligent action.
 
 
-
-### Mere hisaab se ye better hai
-
-
-**Ye wala hi use karo.** Isme reviewer ko immediately:
-
-
-**What → Live Demo → Features → Tech → Screenshots → Run → Scope**
-
-
-mil jata hai.
-
-
-Aur **12 screenshots README mein daalne ki zarurat nahi hai**. 6–7 strong screenshots enough hain. Baaki `screenshots/` folder mein reh sakte hain.
-
-
-Especially tumhare assignment ke liye **Live Demo + Workflow Builder + Goal/Outcome + Hero + Dark Mode** sabse important visuals hain.

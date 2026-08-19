@@ -13,47 +13,52 @@
 [![Framer Motion](https://img.shields.io/badge/Framer_Motion-0055FF?style=for-the-badge&logo=framer&logoColor=white)](https://www.framer.com/motion/)
 [![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://vercel.com/)
 
-**[Live Demo](https://aivora-ai-theta.vercel.app/) · [Report a Bug](https://github.com/Shresth2929/Aivora-AI/issues) · [Request a Feature](https://github.com/Shresth2929/Aivora-AI/issues)**
+**[Live Demo](https://aivora-ai-theta.vercel.app/) · [GitHub](https://github.com/Shresth2929/Aivora-AI)**
 
 </div>
 
 ---
 
-## 📋 About This Submission
+## 📋 About Aivora
 
-This project is my submission for the **Acdyon Technologies Frontend Challenge — Part 2: The Premium Home Page**. The brief: redesign a product's home page so it lands the *"wow, I want an account"* reaction in the first 3 seconds — real taste over templated defaults, no fabricated metrics or testimonials.
+Aivora AI is a premium frontend product concept built around **AI workflow orchestration**.
 
-Aivora AI is the product I invented for the challenge: a premium AI orchestration concept that turns a natural-language goal into a structured workflow — research → reasoning → action → outcome.
+Instead of treating AI as a simple chat interface, Aivora transforms a high-level goal into a structured workflow:
 
-| Challenge Requirement | Where It's Met |
-|---|---|
-| Hero with clear value prop + CTA | Landing hero — see [Hero screenshots](#-screenshots) |
-| Section that *shows* the product, not just claims | Interactive Workflow Demo + Goal → Outcome visualization |
-| One motion/micro-interaction that earns its keep | Framer Motion step-through on the workflow demo |
-| 390px mobile / 1440px desktop, no horizontal scroll | Fully responsive, tested at both breakpoints |
-| Real dark mode (all-or-nothing) | Complete dark/light theme, no partial states |
-| No fake testimonials, user counts, or logos | None used — copy is honest about this being a concept demo |
+```text
+Goal
+  ↓
+Aivora Agent
+  ↓
+Research
+  ↓
+Reasoning
+  ↓
+Action
+  ↓
+Outcome
+```
 
-> Aivora is a frontend product prototype. Workflow demonstrations use deterministic mock data and do not perform real AI processing or external actions — stated up front rather than dressed up as something it isn't.
+The project focuses on product thinking, frontend engineering, interaction design, responsive layouts, and purposeful motion.
+
+> Aivora is a frontend product prototype. The workflow demonstrations use deterministic mock data and do not perform real AI processing or external actions.
 
 ---
 
 ## 🚀 Live Demo
 
-**[aivora-ai-theta.vercel.app](https://aivora-ai-theta.vercel.app/)**
-
-Full design rationale and trade-offs are in [`DECISIONS.md`](./DECISIONS.md).
+**[Open Aivora AI](https://aivora-ai-theta.vercel.app/)**
 
 ---
 
 ## ✨ Features
 
-- **Interactive Workflow Demo** — Select a goal and watch a structured workflow progress step-by-step.
-- **Workflow Builder** — Configure goal, input source, and output format to generate a workflow.
-- **Goal → Outcome Visualization** — Shows how an AI orchestrator processes a business objective, not just describes it.
-- **Dark & Light Mode** — Full theme coverage across every screen, no half-dark states.
-- **Premium Motion** — Purposeful Framer Motion transitions that support the story instead of decorating it.
-- **Fully Responsive** — Built and verified at 390px (mobile) through 1440px (desktop).
+- **Interactive Workflow Demo** — Explore different workflow scenarios step-by-step.
+- **Workflow Builder** — Configure goals, inputs, and outputs.
+- **Goal → Outcome Visualization** — Visualize how a goal moves through the orchestration process.
+- **Dark & Light Mode** — Complete theme experience.
+- **Premium Motion** — Framer Motion transitions and interactions.
+- **Responsive Design** — Optimized for mobile, tablet, and desktop.
 
 ---
 
@@ -72,40 +77,52 @@ Full design rationale and trade-offs are in [`DECISIONS.md`](./DECISIONS.md).
 
 ## 📸 Screenshots
 
-### Hero — Light Mode
-![Aivora Hero Light](./screenshots/hero-light.png)
-
 ### Hero — Dark Mode
-![Aivora Hero Dark](./screenshots/hero-dark.png)
+
+![Aivora Hero](./screenshots/hero-light.png)
+
+### Workflow Demo — Market Research
+
+![Market Research Workflow](./screenshots/hero-dark.png)
 
 ### Philosophy
+
 ![Philosophy](./screenshots/philosophy-light.png)
 
 ### Capabilities
+
 ![Capabilities](./screenshots/capabilities-light.png)
 
 ### Workflow Builder
+
 ![Workflow Builder](./screenshots/workflow-builder-light.png)
 
 ### Goal → Outcome
+
 ![Goal Outcome](./screenshots/goal-outcome-light.png)
 
-### Interactive Workflow Demo — Automation
-![Live Demo Automation](./screenshots/live-demo-automation.png)
+### Interactive Workflow — Initial State
 
-### Interactive Workflow Demo — Market Research
-![Live Demo Market](./screenshots/live-demo-market.png)
+![Workflow Initial State](./screenshots/live-demo-automation.png)
 
-### Interactive Workflow Demo — Competitive Analysis
-![Live Demo Competitive](./screenshots/live-demo-competitive.png)
+### Interactive Workflow — Market Research
 
-### Interactive Workflow Demo — Feedback Loop
-![Live Demo Feedback](./screenshots/live-demo-feedback.png)
+![Market Research](./screenshots/live-demo-market.png)
 
-### Interactive Workflow Demo — Empty State
-![Live Demo Empty](./screenshots/live-demo-empty.png)
+### Interactive Workflow — Competitive Analysis
+
+![Competitive Analysis](./screenshots/live-demo-competitive.png)
+
+### Interactive Workflow — Feedback Loop
+
+![Feedback Loop](./screenshots/live-demo-feedback.png)
+
+### Workflow Overview
+
+![Workflow Overview](./screenshots/live-demo-empty.png)
 
 ### Final CTA
+
 ![Final CTA](./screenshots/final-cta.png)
 
 ---
@@ -137,29 +154,25 @@ Open **http://localhost:3000** to run the application locally.
 
 ## 🎯 Project Focus
 
-Aivora was built with a focus on **product thinking, frontend engineering, interaction design, responsive UI, and motion design** — the exact axes the challenge grades on: systems thinking, UI craft & taste, honesty, and ownership.
+Aivora was designed around:
 
-### Core Product Flow
+- Product thinking
+- Frontend engineering
+- Interaction design
+- Responsive UI
+- Motion design
+- Clean and intentional visual hierarchy
 
-```text
-Goal
-  ↓
-Aivora Agent
-  ↓
-Research
-  ↓
-Reasoning
-  ↓
-Action
-  ↓
-Outcome
-```
+The core idea is simple:
+
+> **Turn ambitious goals into intelligent action.**
 
 ---
 
 <div align="center">
 
 ### Aivora AI
-**Turn ambitious goals into intelligent action.**
+
+**Intelligence flows through Aivora.**
 
 </div>

@@ -5,7 +5,7 @@ const FOOTER_LINKS = [
   { label: "How it works", href: "#how-it-works" },
   { label: "Capabilities", href: "#capabilities" },
   { label: "Philosophy", href: "#philosophy" },
-  { label: "GitHub", href: "https://github.com", external: true },
+  { label: "GitHub", href: "https://github.com/Shresth2929/Aivora-AI", external: true },
 ];
 
 export default function Footer() {

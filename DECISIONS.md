@@ -2,59 +2,30 @@
 
 ## 1. Why this approach over the obvious alternative?
 
-**The decision**: Build a single, highly polished homepage rather than a multi-page application with a dashboard, onboarding flow, or product simulation.
+I chose to build Aivora as a focused product homepage instead of turning it into a larger multi-page application.
 
-**The reasoning**: The brief is a homepage for a product that does not exist. The most honest and highest-value deliverable within the time constraint is a homepage that communicates the product's value proposition clearly, demonstrates its core workflow logic interactively, and feels premium enough that a real user would want to learn more.
+The main goal of the challenge was to create a homepage that communicates the product quickly and makes the product itself visible, rather than only describing it. Because Aivora is an AI workflow orchestration concept, I used the homepage to show that idea through the workflow builder, goal-to-outcome section, and interactive workflow demo.
 
-A larger application would introduce several problems:
-- **Scope inflation** — adding pages for the sake of size produces mediocre quality everywhere
-- **Fabrication risk** — building a full product simulation invites fake complexity (mock APIs, fake dashboards) that was explicitly prohibited
-- **Review burden** — a reviewer evaluating this as a homepage challenge wants to see UI craft, not application architecture depth
+I considered adding more product-like pages such as a dashboard or onboarding flow, but that would have increased the scope without adding much value to the homepage experience. I wanted to spend that time on the parts that are visible in the final product: layout, typography, responsive behavior, themes, interactions, and motion.
 
-The chosen scope allows every pixel, interaction, and line of copy to receive proper attention.
+The workflow examples use mock data because this project is a frontend prototype. I did not want to make the interface look like it was performing real AI processing when it is not.
 
-**What was chosen instead of the obvious**:
-The obvious alternative would have been a Next.js app with multiple routes (dashboard, onboarding, docs) with stubbed functionality. Instead: one page, nine sections, each with distinct visual treatment, real interactivity, and deliberate design rationale.
+## 2. What trade-off did I make under the time limit?
 
----
+The main trade-off was choosing depth over the number of features.
 
-## 2. What trade-off was made under the time limit?
+Instead of building additional pages or a real backend, I focused on making the existing sections feel complete. This included the interactive workflow states, dark/light mode, responsive layouts, and small Framer Motion transitions.
 
-**What was intentionally excluded**:
+Some deeper work was left outside the scope, such as a full accessibility audit, extensive real-device testing, and automated tests for the interactive workflow logic.
 
-- **Animation polish** — Framer Motion is used for core choreography (entrance, state transitions, hover), but some micro-interactions (e.g., custom cursor, advanced scroll-linked parallax) were left out to avoid over-engineering
-- **Full mobile keyboard testing** — responsive layouts were built with correct media queries and tested visually, but physical device testing was not performed
-- **Advanced accessibility audit** — ARIA labels, semantic HTML, focus management, and skip-to-content are implemented, but a full WCAG 2.1 AA audit was not performed
-- **Vercel deployment URL** — the project is structured for zero-config Vercel deployment but a live URL was not added to the README
+With a full week, I would spend more time testing the interface on physical mobile devices, improving accessibility, adding more workflow states, and writing tests for the interactive components.
 
-**Given a full week, what would change**:
-- Add a genuine Vercel deployment with a custom domain
-- Implement scroll-linked animations (section indicators, progress bars)
-- Add a proper storybook-style component library alongside the homepage
-- Conduct physical mobile device testing (iOS Safari, Android Chrome)
-- Perform a full WCAG 2.1 AA audit and remediate findings
-- Add keyboard shortcuts (help modal, navigation shortcuts)
-- Write unit tests for the state machines in AgentDemo and WorkflowBuilder
+## 3. Where did I use AI tools?
 
----
+I used AI tools during development mainly for brainstorming, exploring implementation approaches, and getting suggestions for component structure, copy, styling, mock workflow data, and animations.
 
-## 3. Where was AI used?
+I did not use the generated output without checking it. I adapted the suggestions to fit Aivora's design and removed ideas that did not make sense for the product or the challenge.
 
-**AI-assisted**:
-- **Component architecture** — Claude suggested the component split (Navbar, Hero, WorkflowHero, AgentDemo, etc.); this was accepted as it aligned with standard Next.js patterns
-- **Mock data structure** — the `DemoGoal` and `WorkflowStep` type definitions and demo content were AI-generated and then manually reviewed for tone, honesty, and relevance
-- **CSS design tokens** — the initial color token system was AI-suggested; the specific values (bg-base, accent, border tones) were manually tuned for contrast and visual quality
-- **Copy** — section headlines and body text were AI-drafted and manually edited to remove generic AI tone
-- **Framer Motion choreography** — animation variants were AI-suggested and then manually adjusted for timing and easing
+I also made the final decisions around the page structure, visual hierarchy, responsive behavior, theme implementation, workflow interactions, animation usage, and the overall product direction.
 
-**Manually written or significantly revised**:
-- The `AgentDemo` state machine (idle/running/complete with proper cleanup via `useRef` for timeouts)
-- The theme system (localStorage + html.dark class + SSR flash prevention)
-- All responsive breakpoint decisions
-- The decision to use CSS custom properties with `color-mix()` instead of Tailwind utility classes for theme-aware colors (this was a deliberate architectural choice given Tailwind v4's new CSS-native theming model)
-- The `DECISIONS.md` content itself
-
-**Rejected AI output**:
-- AI initially suggested using `useContext` + a ThemeProvider component. This was rejected in favor of direct DOM manipulation + localStorage because the app has no complex state sharing needs and the simpler approach avoids unnecessary re-renders.
-- AI suggested adding a `framer-motion` `LayoutGroup` for the workflow builder. This was rejected because the AnimatePresence mode="wait" approach is sufficient and simpler.
-- AI suggested fake testimonial and company logo sections. These were explicitly rejected per the assignment brief.
+One important decision was to avoid fabricated testimonials, user numbers, or company logos. Since Aivora is a concept product, I kept the content focused on demonstrating the product instead of creating artificial proof of traction.

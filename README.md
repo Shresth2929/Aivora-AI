@@ -72,11 +72,17 @@ Full design rationale and trade-offs are in [`DECISIONS.md`](./DECISIONS.md).
 
 ## 📸 Screenshots
 
+### Hero — Light Mode
+![Aivora Hero Light](./screenshots/hero-light.png)
+
 ### Hero — Dark Mode
 ![Aivora Hero Dark](./screenshots/hero-dark.png)
 
-### Hero — Light Mode
-![Aivora Hero Light](./screenshots/hero-light.png)
+### Philosophy
+![Philosophy](./screenshots/philosophy-light.png)
+
+### Capabilities
+![Capabilities](./screenshots/capabilities-light.png)
 
 ### Workflow Builder
 ![Workflow Builder](./screenshots/workflow-builder-light.png)
@@ -84,11 +90,23 @@ Full design rationale and trade-offs are in [`DECISIONS.md`](./DECISIONS.md).
 ### Goal → Outcome
 ![Goal Outcome](./screenshots/goal-outcome-light.png)
 
-### Capabilities
-![Capabilities](./screenshots/capabilities-light.png)
+### Interactive Workflow Demo — Automation
+![Live Demo Automation](./screenshots/live-demo-automation.png)
 
-### Interactive Workflow Demo
-![Live Workflow Demo](./screenshots/live-demo-automation.png)
+### Interactive Workflow Demo — Market Research
+![Live Demo Market](./screenshots/live-demo-market.png)
+
+### Interactive Workflow Demo — Competitive Analysis
+![Live Demo Competitive](./screenshots/live-demo-competitive.png)
+
+### Interactive Workflow Demo — Feedback Loop
+![Live Demo Feedback](./screenshots/live-demo-feedback.png)
+
+### Interactive Workflow Demo — Empty State
+![Live Demo Empty](./screenshots/live-demo-empty.png)
+
+### Final CTA
+![Final CTA](./screenshots/final-cta.png)
 
 ---
 
